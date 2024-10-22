@@ -20,3 +20,7 @@ We are always looking for contributors to take this framework to the next level 
 - Move client components from the `globalThis` to a passwordScope.
 - Add `eslint` and its rules.
 - Add `typescript`.
+
+# koras
+
+Enjoy modern, simple and cross-platform UI composition in browsers and servers without a virtual DOM or tagged templates.
