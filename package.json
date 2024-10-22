@@ -1,7 +1,7 @@
 {
-    "name": "@codingnninja/render",
+    "name": "@codingnninja/koras",
     "version": "0.0.18",
-    "description": "Use JSX and lots more in browsers and servers without a Virtual DOM, build or tagged templates",
+    "description": "Enjoy simple, no-build and cross-platform UI composition in browsers and servers without a virtual DOM or tagged templates.",
     "author": "Ayobami Ogundiran (ayobami_ogundiran@yahoo.com)",
     "keywords": [
         "React alternative",
@@ -11,13 +11,13 @@
         "JSX in the browser"
     ],
     "license": "ISC",
-    "homepage": "https://github.com/codingnninja/render#readme",
+    "homepage": "https://github.com/codingnninja/koras#readme",
     "bugs": {
-        "url": "https://github.com/codingnninja/render/issues"
+        "url": "https://github.com/codingnninja/koras/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/codingnninja/render.git"
+        "url": "git+https://github.com/codingnninja/koras.git"
     },
     "module": "dist/esm/koras.js",
     "module_min": "dist/esm/koras.min.js", 
