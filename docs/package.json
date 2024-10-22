@@ -1,0 +1,27 @@
+{
+  "name": "render.jsx docs",
+  "version": "1.0.0",
+  "description": "Documentation of how $render.jsx works",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:serve": "vitepress serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@codingnninja/render": "^0.0.18",
+    "vitepress": "^1.0.0-rc.45",
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "@shikijs/transformers": "^1.14.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.7",
+    "vuepress": "^1.9.10"
+  }
+}

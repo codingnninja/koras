@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW X8 -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="8.26772in" height="11.6929in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 8268 11693"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <font id="FontID1" horiz-adv-x="778" font-variant="normal" style="fill-rule:nonzero" font-style="normal" font-weight="400">
+	<font-face 
+		font-family="a Big Deal">
+		<font-face-src>
+			<font-face-name name="Big Deal"/>
+		</font-face-src>
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="&gt;" horiz-adv-x="494" d="M484.333 336l-250 -305.667 -220.667 0 250 305.667 -250 305.667 220.667 0 250 -305.667z"/>
+  </font>
+  <font id="FontID0" horiz-adv-x="722" font-variant="normal" style="fill-rule:nonzero" font-style="normal" font-weight="700">
+	<font-face 
+		font-family="Futura Md BT">
+		<font-face-src>
+			<font-face-name name="Futura Md BT Bold"/>
+		</font-face-src>
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="$" horiz-adv-x="624" d="M116.167 232.167c28.0005,-32.4998 56.5,-56.8337 85.1669,-72.9999 28.8332,-16.1672 58.5001,-24.1666 88.6662,-24.1666 24.5003,0 44.6667,6.99943 60.8339,21.1665 16.1662,14.1661 24.1666,31.8334 24.1666,52.9999 0,23.1666 -6.83398,41.0002 -20.3337,53.4999 -13.4998,12.4997 -44.3331,25.3331 -92.5,38.3337 -73.3336,20.1664 -124.5,45.3331 -154,75.3328 -29.4996,30.1669 -44.1658,71.3335 -44.1658,123.667 0,64.5004 20.3328,116.667 60.833,156.833 40.5002,40.0001 97.1666,63.6668 170,71.1671l0 67.8333 63.1667 0 0.500025 -66.8333c28.3332,-3.00015 56,-9.50047 83.3332,-19.8337 27.3332,-10.1669 54.3336,-24.333 80.9994,-42.1666l-61.9994 -139.167c-21.8338,18.6664 -44.1667,32.4998 -67.3333,42.0002 -23.1666,9.49955 -46.3332,14.1661 -69.3334,14.1661 -23.5002,0 -42.3339,-5.49936 -56.6664,-16.3326 -14.3334,-11.0005 -21.5001,-25.1667 -21.5001,-42.6666 0,-18 6.33304,-32.3334 19,-43.0003 12.8334,-10.6669 37.6664,-21.0001 74.8328,-30.667l6.33395 -2.0001c79.9994,-21.4992 132.667,-45.3331 157.666,-71.3326 16.8336,-17.4999 29.8342,-38.5001 38.8337,-63.0004 8.83316,-24.333 13.3334,-51.3334 13.3334,-81.0003 0,-67.666 -20.5001,-123.833 -61.5003,-168.5 -40.9993,-44.4995 -95.8329,-70.3325 -164.333,-77.4993l0 -118.667 -63.1667 0 0 116.667c-46.1668,0.666395 -88.6671,9.33318 -127.334,25.8331 -38.8337,16.6663 -76.0001,42.333 -111.834,77.1665l88.3334 143.167z"/>
+  </font>
+  <style type="text/css">
+   <![CDATA[
+    @font-face { font-family:"a Big Deal";font-variant:normal;font-style:normal;font-weight:normal;src:url("#FontID1") format(svg)}
+    @font-face { font-family:"Futura Md BT";font-variant:normal;font-style:normal;font-weight:bold;src:url("#FontID0") format(svg)}
+    .fil0 {fill:#ED3237}
+    .fil1 {fill:#A8518A}
+    .fnt0 {font-weight:bold;font-size:4306.87px;font-family:'Futura Md BT'}
+    .fnt1 {font-weight:normal;font-size:10111.7px;font-family:'a Big Deal'}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <g transform="matrix(1.04321 0 0 1 -1560.63 1954.75)">
+   <text x="4134" y="5846"  class="fil0 fnt0">$</text>
+  </g>
+  <polygon class="fil1" points="4115,8450 4346,8668 4343,8732 4166,9024 4115,9021 3884,8803 3887,8739 4064,8447 "/>
+  <polygon class="fil1" points="4188,3711 4419,3929 4416,3993 4239,4285 4188,4282 3957,4065 3960,4000 4136,3708 "/>
+  <g transform="matrix(-0.296756 -0 0 1 3000.05 3845.19)">
+   <text x="4134" y="5846"  class="fil0 fnt1">&gt;</text>
+  </g>
+  <g transform="matrix(0.296756 0 0 1 5377.84 3845.19)">
+   <text x="4134" y="5846"  class="fil0 fnt1">&gt;</text>
+  </g>
+ </g>
+</svg>

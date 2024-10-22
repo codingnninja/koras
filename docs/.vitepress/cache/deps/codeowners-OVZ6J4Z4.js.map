@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../node_modules/shiki/dist/langs/codeowners.mjs"],
+  "sourcesContent": ["const lang = Object.freeze({ \"displayName\": \"CODEOWNERS\", \"name\": \"codeowners\", \"patterns\": [{ \"include\": \"#comment\" }, { \"include\": \"#pattern\" }, { \"include\": \"#owner\" }], \"repository\": { \"comment\": { \"patterns\": [{ \"begin\": \"^\\\\s*#\", \"captures\": { \"0\": { \"name\": \"punctuation.definition.comment.codeowners\" } }, \"end\": \"$\", \"name\": \"comment.line.codeowners\" }] }, \"owner\": { \"match\": \"\\\\S*@\\\\S+\", \"name\": \"storage.type.function.codeowners\" }, \"pattern\": { \"match\": \"^\\\\s*(\\\\S+)\", \"name\": \"variable.other.codeowners\" } }, \"scopeName\": \"text.codeowners\" });\nvar codeowners = [\n  lang\n];\n\nexport { codeowners as default };\n"],
+  "mappings": ";;;AAAA,IAAM,OAAO,OAAO,OAAO,EAAE,eAAe,cAAc,QAAQ,cAAc,YAAY,CAAC,EAAE,WAAW,WAAW,GAAG,EAAE,WAAW,WAAW,GAAG,EAAE,WAAW,SAAS,CAAC,GAAG,cAAc,EAAE,WAAW,EAAE,YAAY,CAAC,EAAE,SAAS,UAAU,YAAY,EAAE,KAAK,EAAE,QAAQ,4CAA4C,EAAE,GAAG,OAAO,KAAK,QAAQ,0BAA0B,CAAC,EAAE,GAAG,SAAS,EAAE,SAAS,aAAa,QAAQ,mCAAmC,GAAG,WAAW,EAAE,SAAS,eAAe,QAAQ,4BAA4B,EAAE,GAAG,aAAa,kBAAkB,CAAC;AAC3iB,IAAI,aAAa;AAAA,EACf;AACF;",
+  "names": []
+}
