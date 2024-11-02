@@ -1,6 +1,10 @@
 # Props
 
-Props is the data or properties passed down to a JSX component as its attributes. Props is always an object so you have to use `{}` or `${}` whenever you're passing down `props` as a whole.
+Props is the data or properties passed down to a JSX component as its attributes. Props is always an object so you have to use `{}` or `${}` whenever you're passing it down.
+
+:::info
+You don't need to wrap { } or ${ } in single or double quotes.
+:::
 
 ```html
 <!-- dynamically -->

@@ -1,13 +1,13 @@
 <!-- ![banner](https://user-images.githubusercontent.com/62628408/201538130-a1008969-06ae-4aad-9ea0-b77384d6bac1.png) -->
 
-# Getting Started with $render.jsx
+# Getting Started with Koras.jsx
 
-[$render.jsx](https://vitepress.vuejs.org/) makes simple and no-build JSX possible in browsers, mobiles and servers without a virtual DOM or tagged templates. You can now render JavaScript components with the speed of light in script tags, and esModules.
+[Koras.jsx]() makes simple and no-build JSX possible in browsers, mobiles and servers without a virtual DOM or tagged templates. You can now render JavaScript components with the speed of light in esModules.
 
 It's intuitive, super fast and flexible.
 
 ::: info
-Are you curious to see $render.jsx in action? Check it out at [LovePlay music player](https://codingnninja.github.io/lovePlay) .
+Are you curious to see koras.jsx in action? Check it out at [LovePlay music player](https://codingnninja.github.io/lovePlay) .
 :::
 
 ## Installations
@@ -40,7 +40,7 @@ import {
 } from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/render.min.js";
 ```
 
-Now, you can enjoy all the goodies that come with $render.jsx.
+Now, you can enjoy all the goodies that come with Koras.jsx.
 
 ## Quick Demo - Counter with $select (Browser)
 
@@ -131,7 +131,7 @@ $render(Counter);
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 
-## Scaffold $render project
+## Scaffold Koras projects
 
 - scaffold
 
@@ -140,7 +140,7 @@ npx create-render-app music-player
 ```
 
 ::: info
-Note: since `$render.jsx` is similar to React, this is to remind you to never scaffold your `React` application with `create-react-app`; use `Remix` or `Next` instead.
+Note: since `Koras.jsx` is similar to React, this is to remind you to never scaffold your `React` application with `create-react-app`; use `Remix` or `Next` instead.
 :::
 
 - change directory to the project.

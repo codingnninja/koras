@@ -70,6 +70,7 @@ export default {
           { text: "Rendering", link: "/documentations/concepts/rendering" },
           { text: "Resumability", link: "/documentations/concepts/resumability" },
           { text: "State", link: "/documentations/concepts/state" },
+          { text: "Utils", link: "/documentations/concepts/utils" },
           { text: "Interoperability", link: "/documentations/concepts/interoperability" },
         ],
       },
@@ -86,6 +87,7 @@ export default {
           { text: "Menu", link: "/documentations/components/Menu" },
           { text: "ColorPicker", link: "/documentations/components/ColorPicker" },
           { text: "RenderErrorLogger", link: "/documentations/components/RenderErrorLogger" },
+          { text: "RenderDomPurifier", link: "/documentations/components/RenderDomPurifier" },
         ],
       },
       {

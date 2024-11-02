@@ -110,6 +110,24 @@ export const Shuffle = (status = false) => {
 };
 ```
 
+You can import the utils from a module directly in `Shuffle` using `import()`.
+
+```js
+export const Shuffle = async (status = false) => {
+  const { toggle } = import(_$links.utils);
+  return `
+     <div id="shuffle">
+       <button class="btn-icon toggle">
+         <span
+           class="material-symbols-rounded ${status ? "active" : ""}"
+           onclick="${toggle(status)}"
+         >shuffle ${status} </span>
+       </button>
+     </div>
+   `;
+};
+```
+
 - Use the component
 
 ```js copy

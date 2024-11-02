@@ -2,7 +2,7 @@
 
 A component is a part of an object that is detachable and pluggable to another object of the same family. For example, a computer has several components such as the monitor, keyboard, mouse and system unit to mention few. For you to have a computer, you need to bring these components together.
 
-Just like in a computer, $render components are detachable and pluggable to another component that supplies suitable props. Components in $render and React are similar except $render uses JavaScript `template literals` to wrap every `HTML string` to be returned.
+Just like in a computer, $render components are detachable and pluggable to another component that supplies suitable props. Components in koras.jsx and React are similar except koras.jsx uses JavaScript `template literals` to wrap every `HTML string` to be returned.
 
 :::info
 
@@ -165,7 +165,7 @@ onpointermove = "$render(Profile, {{x:this.x, y:this.y}})";
 ```
 
 :::warning
-Note: You can't `$render` a component in its own body but you can `$render` another component.
+Note: You can't `$render` a component in its own body but you can `$render` another component. If you have to do so, make sure you add a stopping point like in a Recursion because the operation will be recursive and loop "forever and ever" if no stopping point is provided.
 :::
 
 ##### Use a parameter with a default value
@@ -217,6 +217,6 @@ function Profile({ id = 1, person = {}, children = { a: "yes" } } = {}) {
 }
 ```
 
-Basically, a `$render` component is still a JavaScript function that has a name with `PascalCase`.
+Basically, a `koras.jsx` component is still a JavaScript function that has a name with `PascalCase` (Koras will support kebab-case in the future).
 
 A common error to avoid in `$render.jsx` or `React` while crafting components is Prop Drilling. Learn more from [How to avoid Prop Drilling in React or $render](https://www.freecodecamp.org/news/avoid-prop-drilling-in-react/)

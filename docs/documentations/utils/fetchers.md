@@ -74,7 +74,7 @@ function Users(props) {
 
 ### Content placement attributes
 
-There are five attributes and you have to use one of them whenever you use a data fetching component or place some elements in another. They are:
+There are six attributes and you have to use one of them whenever you use a data fetching component or place some elements in another. They are:
 
 1. data-replace
 
@@ -116,7 +116,7 @@ There are five attributes and you have to use one of them whenever you use a dat
 
 `data-before="#componentId"` is used to insert a component before another component.
 
-4. data-after
+5. data-after
 
 ```html copy
 <ul id="#componentId" data-after="#targetComponentId">
@@ -125,6 +125,35 @@ There are five attributes and you have to use one of them whenever you use a dat
 ```
 
 `data-after="#componentId"` is used to insert a component before another component.
+
+6. data-fallback
+
+```html copy
+<ul id="#componentId" data-fallback="fetching...">
+  <li>Item 1</li>
+</ul>
+```
+
+`or`
+
+```js
+function Loading(targetId) {
+  //do something
+  return "fetching";
+}
+
+$register(Loading);
+```
+
+Now, use the component as a fallback.
+
+```html copy
+<ul id="#componentId" data-fallback="Loading">
+  <li>Item 1</li>
+</ul>
+```
+
+`data-fallback="ComponentOrText"` is used to set a fallback text or component for a `Fetcher` while fetching data. If you don't add `data-fallback` to a `Fetcher`, it uses `loading...` by default.
 
 :::info
 Extra: We also have `data-defer` to prevent a component from running on the server.
@@ -165,7 +194,7 @@ $render(Users, [{}, {}, {}])
 </button>
 ```
 
-## Static fetchers
+<!-- ## Static fetchers
 
 Static fetchers are fetchers that can't get `props` via `$render` instead they depend on the `DOM` to determine the next update.
 
@@ -179,9 +208,9 @@ const AddTodoForm = (id = 0) => {
   id = todoForm ? Number(todoForm.dataset.id) + 1 : id;
 
   return `
-    <div 
+    <div
       id="todo-form"
-      class="todo-form" 
+      class="todo-form"
       data-append="#todo-form"
     >
       <input id="input-${id}" data-id="${id}">
@@ -224,8 +253,8 @@ async function Articles() {
             <div class="created_at">
               Published on: ${new Date(article.createdAt).toLocaleDateString()}
             </div>
-            <div 
-              class="content truncate-multiline" 
+            <div
+              class="content truncate-multiline"
               onclick="$select('#article-${
                 article.id
               }>.content[toggle|class=truncate-multiline]')">
@@ -242,7 +271,7 @@ async function Articles() {
     <button type="button" onclick="$render(Articles)">Load more...</button>
   `;
 }
-````
+```` -->
 
 ### Inserting a component outside of current component
 

@@ -24,10 +24,19 @@ return `<li class="item">${name}</li>`;
 > conditionally render components
 
 ```js
-if (isAmerica) {
+if (isExpensive) {
   return `<OriginalItem />`;
 }
 return `<InferiorItem />`;
+
+//or
+
+const content;
+if (isExpensive) {
+  content = `<OriginalItem />`;
+}
+content = `<InferiorItem />`;
+return content;
 ```
 
 > conditionally call/trigger a function
@@ -68,7 +77,7 @@ return `
 ```js
 return `
   <li class="item">
-    ${isAmerica && "<OriginalItem />"}
+    ${isExpensive && "<OriginalItem />"}
   </li>
 `;
 ```
@@ -108,7 +117,7 @@ return `
 ```js
 return `
   <li class="item">
-    ${isAmerica ?? "<OriginalItem />"}
+    ${isExpensive ?? "<OriginalItem />"}
   </li>
 `;
 ```
@@ -148,7 +157,7 @@ return `
 ```js
 return `
   <li class="item">
-    ${isAmerica ? "<OriginalItem />" : "<InferiorItem />"}
+    ${isExpensive ? "<OriginalItem />" : "<InferiorItem />"}
   </li>
 `;
 ```

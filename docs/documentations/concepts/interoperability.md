@@ -33,8 +33,8 @@ If not for the closure and the conditional call, rendering `Notes` on the server
 
 ## Identifying runtime code
 
-Runtime code is any functions, modules and objects you do not declare but you only call or instantial them.
+Runtime code is any functions, modules, class and objects you do not declare but you only call or instantiate.
 
-For example, `fetch()`, `document`, `Buffer`, `navigator`, `window` and many others runtime code because you do not declare them. You only use them.
+For example, `fetch()`, `document`, `Buffer`, `navigator`, `window` and many others are runtime code because you do not declare them. You only use them.
 
-It is recommended you put runtime code in closures when you have to run them on multiple runtimes.
+It is recommended you put runtime code in closures when you have to run them on multiple `runtimes`.

@@ -1,24 +1,23 @@
 # Notes component
 
 ```js
-function Notes ({nodeId = 0, isBrowser} = {}) {
-  const note = isBrowser && $select(`note-${noteId}`);
-  const nextNoteId = note ? Number(note.id) + 1 : noteId;
+function Notes (isBrowser) {
+  const note = isBrowser && $select(`state-${noteId}`);
+  const nextNoteId = note ? Number(note.value) + 1 : 1;
 
-  function getNotes( ) {
+  function getNotes() {
     return localStorage.getItem('notes') ?? 'no note yet';
    }
 
   function saveNote(this) {
     if(this.textContent === ' ') return false;
     const notes = $select('notes');
-    localStorage.setItem('notes', notes);
+    localStorage.setItem('notes', notes.outerHTML);
   }
-
-  const props = {noteId: nextNoteId, isBrowser:true};
 
   return `
     <div id="container">
+      <input type="hidden" value="${noteNextId}" id="state-${noteId}"
       <div id="notes">
         ${isBrowser && getNotes()}
           <div
@@ -28,7 +27,7 @@ function Notes ({nodeId = 0, isBrowser} = {}) {
           > </div>
       </div>
       <button
-        onclick="$render(Notes, ${props})"
+        onclick="$render(Notes)"
       > Add note </button>
    </div>
   `;

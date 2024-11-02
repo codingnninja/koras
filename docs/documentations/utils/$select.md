@@ -12,7 +12,7 @@ $select("selector(s)");
 
 - You can write as many as possible custom selections and constrains so you're not limited to the examples in this section.
 
-- It is recommended to use `backticks` with `$select` but you can use whatever you like if you know what you're doing.
+- It is recommended to use `backticks` with `$select` in a function but you can use whatever you like if you know what you're doing.
 
 :::
 
@@ -365,7 +365,11 @@ const posts = $select(".post[sort|order=lengthSortDesc]");
 > Fuzzy match elements containing input
 
 ```js
-const matchedRows = $select(`.row[search|textContent=*${this.value}]`);
+//usage as an event handler.
+$select("tr[search|textContent=*" + this.value + "]");
+
+//usage in a component
+const matchedRows = $select(`.row[search|textContent=*${searchTerm}]`);
 ```
 
 [Click to check]() the common errors in using `$select`.

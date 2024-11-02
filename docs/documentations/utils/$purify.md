@@ -1,6 +1,6 @@
 # $purify utility
 
-`$purify` converts stringified data back to its original version. In JavaScript, any object passed via template literals will turn to `[Object object]`. To avoid that from happening, `$render` introduces `stringify` to convert data to a string before passing it to template literals.
+`$purify` converts stringified data back to its original version. In JavaScript, any object passed via template literals will turn to `[Object object]`. To avoid that from happening, `koras.jsx` introduces `stringify` to convert data to a string before passing it to template literals.
 
 ```js copy
 $purify(stringifiedData);

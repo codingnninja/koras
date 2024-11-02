@@ -41,12 +41,17 @@ The browser will hydrate the `add` function above into the `Calculator` componen
 
 ### Avoiding hydrations from template literals
 
-Maybe you don't like how hydrated functions look in the browser, you can still use conditional rendering to trigger functions in a component.
+Maybe you don't like how hydrated functions look in the browser, you can use conditional statements to trigger functions in a component.
 
 ```js
 function Box({item:"water", isBrowser}){
   const modifyItem = (item) => `Yeah, ${item}`;
-  const modifiedItem = isBrowser && modifyItem(item);
+  let modifiedItem;
+
+  if(item){
+    modifiedItem = modifyItem(item);
+  }
+
   const props = {item: modifiedItem,  isBrowser:false};
   return`
     <div id="box" onclick="$render(Box, {props})"></div>
@@ -54,4 +59,4 @@ function Box({item:"water", isBrowser}){
 }
 ```
 
-You can also create a custom `$utils` to access utilities globally. Check [$utils]() to see how to create it.
+You can also create a custom `$utils` to access utilities globally. Check [utils]() to see how to create it.
