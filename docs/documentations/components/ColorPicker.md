@@ -62,7 +62,7 @@ function ColorPicker(color = "indigo-900") {
    <div id="color-picker">
       <div class="relative ml-3 mt-8">
         <div class="origin-top-right absolute right-80 mt-2 w-80 rounded-md">
-          <PickerIcon color="{color}" />
+          <PickerIcon color="${color}" />
           <div class="rounded-md bg-white shadow-xs px-4 py-3" id="colors">
             <ColorCodeIndicator colorCode=${color} />
             <div class="flex flex-wrap -mx-2">
