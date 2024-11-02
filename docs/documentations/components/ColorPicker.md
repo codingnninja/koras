@@ -68,13 +68,14 @@ function ColorPicker(color = "indigo-900") {
             <div class="flex flex-wrap -mx-2">
           ${colors.map((color) =>
             variants.flatMap((variant, index) => {
+              const props = {
+                color: `${color}-${variant}`,
+              };
               return `
                 <div class="color w-8 h-8 inline-flex rounded-full cursor-pointer border-4 border-white bg-${color}-${variant} ${
                 !index ? `focus:outline-none focus:shadow-outline` : ``
-              }" onclick="$render(PickerIndicatorRenderer, ${{
-                color: `${color}-${variant}`,
-              }})"></div>
-                
+              }" onclick="$render(PickerIndicatorRenderer, ${props})"></div>
+
             `;
             })
           )}
