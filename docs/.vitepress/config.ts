@@ -1,6 +1,6 @@
 
 export default {
-  base: '/koras/docs/',
+  base: '/koras/',
   head: [
     ['link', {rel:'stylesheet', href:'./index.css'}],
     ['script', { src: './demos/demos.js', type: 'module' }],
