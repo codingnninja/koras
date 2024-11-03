@@ -1,12 +1,11 @@
 
 export default {
-  base: '/koras/',
+  base: '/koras/docs/',
   head: [
     ['link', {rel:'stylesheet', href:'./index.css'}],
     ['script', { src: './demos/demos.js', type: 'module' }],
     ['script', { src: './app.js'}],
     ['script', { type:'module', src: './test.js'}],
-    ['script', {src: 'https://cdn.tailwindcss.com' }],
   ],
   title: "$render",
   description: "Enjoy stupid-simple JSX",
