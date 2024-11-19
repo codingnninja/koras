@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css"
+    />
+    <!-- <link href="https://unpkg.com//prismjs@v1.x/themes/prism.css" rel="stylesheet" /> -->
+    <title>Document</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <style>
+      body {
+        background-color: #f8f8f8;
+        height: 100%;
+      }
+      .list {
+        background: #f8f8f8;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .item {
+        list-style: none;
+        display: block;
+        text-align: center;
+        background-color: #fff;
+        margin: 0.4%;
+        border-radius: 5px;
+        box-shadow: 0 5px 13px -8px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
+      .name {
+        line-height: 18px;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+        font-family: arial;
+        padding: 10px 0;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+    <script type="module" src="main.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <input 
+      type="text" 
+      placeholder="filter"
+      onkeyup="$select(`.post[search|textContent=*${this.value}]`)"
+    >
+    <div class="text"> 
+      <div class="post" id="e2">abayomi</div>
+      <div class="post yes" id="e3">aope</div>
+      <div class="post yes" id="e4">Molu</div>
+    </div>
+    <button
+      id="test-btn"
+      onclick="$select('.post[delete|id=e2], #test-btn[add|textContent=loading..., add|disabled=true]')"
+    >
+      delete
+    </button>
+    <br />
+
+    <button id="test-bt" onclick="$select('#test-bt[add|textContent+=1]')">
+      0
+    </button>
+
+    <button id="test-bta" onclick="$select('#test-bta[add|textContent-=1]')">
+      0
+    </button>
+
+    <div class="number">
+      <div class="price">20</div>
+      <div class="price">25</div>
+      <div class="price">30</div>
+    </div>
+
+    <div id="typing" class="fade"></div>
+    <br />
+    <div
+      contenteditable=""
+      onkeyup="$select('#typing[add|textContent=.,  remove|class=fade]')"
+      onkeydown="$select('#typing[add|textContent=typing...,  remove|class=fade]')"
+      onblur="$select('#typing[add|textContent=saved, add|class=fade]')"
+    >
+      what's on your mind
+    </div>
+    <script src="https://unpkg.com/prismjs@v1.x/components/prism-core.min.js"></script>
+	<script src="https://unpkg.com/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
+  </body>
+</html>
+
+<!-- https://cdn.jsdelivr.net/npm/@codingnninja/render@0.0.6/dist/umd/bundle.min.js -->

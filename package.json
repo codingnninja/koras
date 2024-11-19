@@ -1,0 +1,58 @@
+{
+  "name": "@codingnninja/koras",
+  "version": "0.0.18",
+  "description": "Enjoy simple, no-build and cross-platform UI composition in browsers and servers without a virtual DOM or tagged templates.",
+  "author": "Ayobami Ogundiran (ayobami_ogundiran@yahoo.com)",
+  "keywords": [
+    "React alternative",
+    "React in the browser",
+    "Server Component",
+    "Client Component",
+    "JSX in the browser"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/codingnninja/koras#readme",
+  "bugs": {
+    "url": "https://github.com/codingnninja/koras/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codingnninja/koras.git"
+  },
+  "module": "dist/esm/koras.js",
+  "module_min": "dist/esm/koras.min.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/koras.js"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "test": "jest",
+    "build": "npm run clean && rollup -c",
+    "dev": "npm run clean && rollup -c -w",
+    "test:browser": "",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.12",
+    "@babel/preset-env": "^7.20.2",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-terser": "^0.3.0",
+    "jest": "^29.7.0",
+    "jest-mock": "^29.7.0",
+    "rollup": "^3.9.1",
+    "vitepress": "^1.5.0"
+  },
+  "engines": {
+    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
