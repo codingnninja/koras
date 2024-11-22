@@ -19,28 +19,28 @@ hero:
 
 # Features section
 features:
-  - icon: ⚡️⚡️
+  - icon: 🚀
     title: Ship fast & more
     details: $render helps you ship fast by making hard features simple to implement.
-  - icon: 🎀
+  - icon: ♨️
     title: Stop burning money
     details: It is designed to cut unnecessary operations that cost you more money.
-  - icon: ⚡️
+  - icon: ⚖️
     title: Scale with ease
     details: You don't need to worry about scaling as $render is simple to use and fun to scale.
-  - icon: ⚡️
+  - icon: 🎉
     title: Enjoy great experience
     details: Better life for users and developers out of the box without compromizing speed.
-  - icon: ⚡️
+  - icon: 👌
     title: Simple learning curve
     details: It is easy to learn as it makes use of everything you already know to achieve its aims.
-  - icon: 🔥
+  - icon: 🌐
     title: Native SEO & accessibility
     details: No workaround is needed for basic SEO and accessibility. It just works.
-  - icon: ⚡️
+  - icon: 🛠️
     title: Be stable and flexible
     details: Build applications that give you peace of mind to sleep at night but easy to update.
-  - icon: 🎉
+  - icon: 🔗
     title: Easy integration
     details: It works seamlessly with Ruby, Laravel, Django and others. It works everywhere.
 ---
@@ -72,26 +72,4 @@ head:
       type: image/svg
       href: hero-logo.svg
 
-# https://vitepress.dev/reference/default-theme-home-page
-layout: home
-
-hero:
-  name: "koras docs"
-  text: "jsx in the browser"
-  tagline: My great project tagline
-  actions:
-    - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
-    - theme: alt
-      text: API Examples
-      link: /api-examples
-
-features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
---- -->
+-->
