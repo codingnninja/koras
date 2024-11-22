@@ -149,24 +149,3 @@ You can put an `app` level state in a tag in `App` component and any component t
 By default, it is straight forewards to manage state with `$render` and `js` scopes. Somestimes, you need state management tools to deal with state in your applications efficiently
 
 You probably need a state management tool when there multiple inter-dependency of components, that is, many non-nested or unrelated components have to change together.
-
-<!--
-### State in the global scope
-
-A global state is the current or latest data of an app that is accessible to all parts of the app. A global state can be used from anywhere in an application.
-
-You can simply create a simple state like below:
-
-```js
-const state = {
-  posts: [],
-};
-
-globalThis["appState"] = state;
-```
-
-Then, you can call `appState` everywhere in your application to access `posts`. It is necessary to make sure your the name of global state is not the same with other things in the global scope.
-
-:::info
-Note: You can use a state management library, create your own when necessary or use the example above.
-::: -->

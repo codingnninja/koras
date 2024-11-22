@@ -10,8 +10,8 @@ This is the documentation for possible errors in $render.
 
 - ReferenceError: $render is not defined
 
-This happens when `$render` is not installed, properly imported or linked.
+This happens when `koras.jsx` is not installed, properly imported or linked.
 
 ### Error [object Object]
 
-Whenever you get `[object Object]` as an error in `$render.jsx`, you're most likely to have not registered your component with `$register`.
+Whenever you get `[object Object]` as an error in `koras.jsx`, you're most likely to have not registered your component with `$register`.

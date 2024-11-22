@@ -3,12 +3,12 @@ import {
   toValue,
   tryOnScopeDispose,
   unrefElement
-} from "./chunk-3FTTGHQH.js";
+} from "./chunk-YJ6QP2VR.js";
 import {
   computed,
   ref,
   watch
-} from "./chunk-L2JNJ22P.js";
+} from "./chunk-LW4I4DCF.js";
 
 // node_modules/tabbable/dist/index.esm.js
 var candidateSelectors = ["input:not([inert])", "select:not([inert])", "textarea:not([inert])", "a[href]:not([inert])", "button:not([inert])", "[tabindex]:not(slot):not([inert])", "audio[controls]:not([inert])", "video[controls]:not([inert])", '[contenteditable]:not([contenteditable="false"]):not([inert])', "details>summary:first-of-type:not([inert])", "details:not([inert])"];
@@ -453,17 +453,6 @@ var isKeyBackward = function isKeyBackward2(e) {
 var delay = function delay2(fn) {
   return setTimeout(fn, 0);
 };
-var findIndex = function findIndex2(arr, fn) {
-  var idx = -1;
-  arr.every(function(value, i) {
-    if (fn(value)) {
-      idx = i;
-      return false;
-    }
-    return true;
-  });
-  return idx;
-};
 var valueOrHandler = function valueOrHandler2(value) {
   for (var _len = arguments.length, params = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     params[_key - 1] = arguments[_key];
@@ -714,7 +703,7 @@ var createFocusTrap = function createFocusTrap2(elements, userOptions) {
           destinationNode = state.tabbableGroups[0].firstTabbableNode;
         }
       } else if (isBackward) {
-        var startOfGroupIndex = findIndex(state.tabbableGroups, function(_ref4) {
+        var startOfGroupIndex = state.tabbableGroups.findIndex(function(_ref4) {
           var firstTabbableNode = _ref4.firstTabbableNode;
           return target === firstTabbableNode;
         });
@@ -729,7 +718,7 @@ var createFocusTrap = function createFocusTrap2(elements, userOptions) {
           destinationNode = containerGroup.nextTabbableNode(target, false);
         }
       } else {
-        var lastOfGroupIndex = findIndex(state.tabbableGroups, function(_ref5) {
+        var lastOfGroupIndex = state.tabbableGroups.findIndex(function(_ref5) {
           var lastTabbableNode = _ref5.lastTabbableNode;
           return target === lastTabbableNode;
         });
@@ -1125,7 +1114,7 @@ tabbable/dist/index.esm.js:
 
 focus-trap/dist/focus-trap.esm.js:
   (*!
-  * focus-trap 7.6.1
+  * focus-trap 7.6.2
   * @license MIT, https://github.com/focus-trap/focus-trap/blob/master/LICENSE
   *)
 */

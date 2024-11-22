@@ -86,10 +86,9 @@ $render(Gallery);
 
 - Playground
 
-  <iframe src="https://codesandbox.io/embed/yq4sn7?view=Editor+%2B+Preview&module=%2Findex.html"
+<iframe src="https://codesandbox.io/embed/yq4sn7?view=Editor+%2B+Preview&module=%2Findex.html"
      width="100%" 
      height="500px"
-     title="wandering-voice-yq4sn7"
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>

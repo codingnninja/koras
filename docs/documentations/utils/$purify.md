@@ -10,4 +10,4 @@ $purify(stringifiedData);
 You don't need to use `$purify` because it is used behind the scenes but you may need it to workaround some challenges in some other libraries or frameworks.
 :::
 
-[Click to check]() the common errors in using `$purify`.
+Click to check the common errors in using `$purify`.

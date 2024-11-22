@@ -372,4 +372,4 @@ $select("tr[search|textContent=*" + this.value + "]");
 const matchedRows = $select(`.row[search|textContent=*${searchTerm}]`);
 ```
 
-[Click to check]() the common errors in using `$select`.
+Click to check the common errors in using `$select`.

@@ -25,8 +25,12 @@ const App = () => {
     </div>
   `;
 };
+```
 
-<App />;
+You call it like:
+
+```html
+<App />
 ```
 
 #### A component with props.
@@ -43,13 +47,18 @@ function List(items) {
   `;
 }
 //usage
-const list = [{
-  name: 'Alice',
-  age: 24
-}];
+const list = [
+  {
+    name: "Alice",
+    age: 24,
+  },
+];
+```
 
-<List users=${list} />
-<List users={list} />
+You call it like:
+
+```html
+<List users="${list}" />
 ```
 
 `Or`
@@ -72,9 +81,12 @@ const list = [
     age: 24,
   },
 ];
+```
 
-<List users={list} />;
-<List users=${list} />;
+You call it like:
+
+```html
+<List users="${list}" />
 ```
 
 ## Component parameter
@@ -140,7 +152,7 @@ function Profile({ id, person, children }) {
 
 - As html tags
 
-```js
+```md
 //As HTML tags
 <Counter count="0" />
 <Profile user=${user} />

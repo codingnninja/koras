@@ -63,4 +63,4 @@ import { sql } from "./db";
 $register(sql);
 ```
 
-[Click to check]() the common errors in using `$register`.
+Click to check the common errors in using `$register`.

@@ -1,6 +1,6 @@
 # Hydration
 
-Hydration is the process of attaching event handlers to `html` on the client side but in `$render.jsx`, `Hydration` works by default in the browser so there is no need to take some extra time to `re-compile`. What you write is what you get in the browser.
+Hydration is the process of attaching event handlers to `html` on the client side but in `koras.jsx`, `Hydration` works by default in the browser so there is no need to take some extra time to `re-compile`. What you write is what you get in the browser.
 
 When you wrap a function with template literals while passing it to an event handler in a component, it is hydrated into the component.
 
@@ -59,4 +59,4 @@ function Box({item:"water", isBrowser}){
 }
 ```
 
-You can also create a custom `$utils` to access utilities globally. Check [utils]() to see how to create it.
+You can also create a custom `$utils` to access utilities globally. Check utils to see how to create it.

@@ -6,7 +6,7 @@ Though rendering systems in `koras.jsx` and `React` are similar, the operating s
 
 Using `nth = a + (n - 1)d` in `koras.jsx` makes rendering very fast and state management more comfortable.
 
-Rendering and re-rendering often change the state of elements in a component. [Learn more](https://render-docs.vercel.app/utils/$render).
+Rendering and re-rendering often change the state of elements in a component. Learn more.
 
 ### Conditional rendering
 

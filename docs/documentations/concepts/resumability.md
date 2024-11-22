@@ -6,4 +6,4 @@ That is resumability in the context of `$render`.
 
 `$select` utilities make it possible to change operations of any elements in a `$render` component without re-rendering and re-hydration like in `React`.
 
-[Learn more](https://render-docs.vercel.app/utils/$select) about $select or [Learn more](https://render-docs.vercel.app/utils/$trigger) about $trigger.
+Learn more about $select or Learn more about $trigger.

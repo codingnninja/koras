@@ -67,11 +67,10 @@ const App = () => {
 
 function Profile(person) {
   return `
-    <div
-      id="${person.id}">
+    <div id="${person.id}">
       ${person.name} is ${person.age} year old
     </div>
-    <button onclick="${resetProfile(${person})"></button>
+    <button onclick="resetProfile(${person})"></button>
   `;
 }
 ```
@@ -84,4 +83,4 @@ To avoid it, you need to use `stringify` on any data containing object(s).
 Note: Other values like number, boolean and function could be passed without using `stringify`. `stringify` is only needed for `objects` and `arrays of objects`.
 :::
 
-[Click to check]() the common errors in using `stringify`.
+Click to check the common errors in using `stringify`.

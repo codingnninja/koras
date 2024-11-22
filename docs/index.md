@@ -7,7 +7,7 @@ hero:
   text: Cross-platform rendering...
   image:
     src: /hero-logo.svg
-    alt: $render.jsx logo <$>
+    alt: koras.jsx logo
   tagline: Enjoy simple and no-build JSX in browsers and servers with vanilla JavaScript.
   actions:
     - theme: brand
@@ -15,7 +15,7 @@ hero:
       link: /guide
     - theme: alt
       text: View on GitHub
-      link: https://github.com/codingnninja/render/docs
+      link: https://github.com/codingnninja/koras/docs
 
 # Features section
 features:
@@ -43,6 +43,9 @@ features:
   - icon: 🎉
     title: Easy integration
     details: It works seamlessly with Ruby, Laravel, Django and others. It works everywhere.
+---
+
+<!-- ---
 
 # Meta property
 head:
@@ -60,7 +63,7 @@ head:
       content: https://vitejs.dev/blog/announcing-vite3
   - - meta
     - name: title
-      content: $render docs
+      content: koras.jsx docs
   - - meta
     - name: twitter:card
       content: https://user-images.githubusercontent.com/62628408/200117602-4b274d14-b1b2-4f61-8dcd-9f9482c677a0.png
@@ -68,4 +71,27 @@ head:
     - rel: icon
       type: image/svg
       href: hero-logo.svg
----
+
+# https://vitepress.dev/reference/default-theme-home-page
+layout: home
+
+hero:
+  name: "koras docs"
+  text: "jsx in the browser"
+  tagline: My great project tagline
+  actions:
+    - theme: brand
+      text: Markdown Examples
+      link: /markdown-examples
+    - theme: alt
+      text: API Examples
+      link: /api-examples
+
+features:
+  - title: Feature A
+    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Feature B
+    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Feature C
+    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+--- -->
