@@ -6,7 +6,7 @@
 
 Koras makes no-build JSX possible in browsers and servers without a virtual DOM or tagged template. You can now render JavaScript components with the speed of light in script tags, and esModules.
 
-It's intuitive, super fast and flexible. Learn more from [our docs](render-docs.vercel.app).
+It's intuitive, super fast and flexible. Learn more from our docs.
 
 ## Install vscode extensions
 
