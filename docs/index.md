@@ -12,10 +12,10 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /guide
+      link: documentations/get-started
     - theme: alt
       text: View on GitHub
-      link: https://github.com/codingnninja/koras/docs
+      link: https://github.com/codingnninja/koras/
 
 # Features section
 features:
