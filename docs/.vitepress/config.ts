@@ -53,6 +53,8 @@ export default defineConfig({
           { text: "$register", link: "/documentations/utils/$register" },
           { text: "Stringify", link: "/documentations/utils/stringify" },
           { text: "$purify", link: "/documentations/utils/$purify" },
+          { text: "RenderErrorLogger", link: "/documentations/utils/RenderErrorLogger" },
+          { text: "RenderDomPurifier", link: "/documentations/utils/RenderDomPurifier" },
         ],
       },
       {
@@ -67,7 +69,7 @@ export default defineConfig({
           { text: "Resumability", link: "/documentations/concepts/resumability" },
           { text: "State", link: "/documentations/concepts/state" },
           { text: "Utils", link: "/documentations/concepts/utils" },
-          { text: "Interoperability", link: "/documentations/concepts/interoperability" },
+          { text: "Interoperability", link: "/documentations/concepts/interoperability" }
         ],
       },
       {
