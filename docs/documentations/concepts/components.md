@@ -1,8 +1,8 @@
-# $render Components
+# koras Components
 
 A component is a part of an object that is detachable and pluggable to another object of the same family. For example, a computer has several components such as the monitor, keyboard, mouse and system unit to mention few. For you to have a computer, you need to bring these components together.
 
-Just like in a computer, $render components are detachable and pluggable to another component that supplies suitable props. Components in koras.jsx and React are similar except koras.jsx uses JavaScript `template literals` to wrap every `HTML string` to be returned.
+Just like in a computer, koras components are detachable and pluggable to another component that supplies suitable props. Components in koras.jsx and React are similar except koras.jsx uses JavaScript `template literals` to wrap every `HTML string` to be returned.
 
 :::info
 

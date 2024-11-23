@@ -23,7 +23,7 @@ const person = {
 }
 ```
 
-A state can be viewed in two context in `koras.jsx` -- app and component contexts.
+A state can be viewed in two context in `koras.jsx` -- global and local component contexts.
 
 ### State in a local component context
 
@@ -31,7 +31,7 @@ A component state is the current or latest data of the component. Components in 
 
 - Unit state in a `koras.jsx` component
 
-A unit state is used in a component when a component has only one view property.
+A unit state is used in a component when a component changes only one view property.
 
 ```js
 const Count = (count = 0) {
@@ -45,7 +45,7 @@ It is suitable when you only need to pass one property around for re-rendering.
 
 - Composite state in a `koras.jsx` component
 
-A composite state is used in a component when a component has many view properties.
+A composite state is used in a component when a component changes many view properties.
 
 ```js
 const MovingDot = (coordinates = { x:0, y:3 }) {
@@ -142,10 +142,10 @@ export async function Articles() {
 Note: `Props` is not passed to `$render` in the examples above. It is added to a tag and retrieved by the component. And triggers are outside of the component wrapping `div` so that the `trigger` won't be re-rendered.
 :::
 
-You can put an `app` level state in a tag in `App` component and any component that need it can access it.
+You can put a `global` level state in a tag in `App` component and any component that need it can access it.
 
 ### State management tools
 
-By default, it is straight forewards to manage state with `$render` and `js` scopes. Somestimes, you need state management tools to deal with state in your applications efficiently
+By default, it is straight forewards to manage state with `$render` and `js` scopes. Somestimes, you need state management tools to deal with state in your applications efficiently.
 
-You probably need a state management tool when there multiple inter-dependency of components, that is, many non-nested or unrelated components have to change together.
+You probably need a state management tool when there are multiple inter-dependency of components, that is, many non-nested or unrelated components have to change together.

@@ -188,4 +188,4 @@ function Audio({ song, autoplaySong }) {
 }
 ```
 
-Yeah! That is how to pass down and use single and multiple props in `$render`.
+Yeah! That is how to pass down and use single and multiple props in `koras`.

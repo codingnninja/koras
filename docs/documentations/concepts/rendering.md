@@ -1,12 +1,12 @@
 # Rendering
 
-Rendering refers to the process of displaying or updating the user interface of a web application. `$render` uses `$render(Component, props)` utility to achieve React like rendering without a virtual DOM or tagged templates.
+Rendering refers to the process of displaying or updating the user interface of a web application. `koras` uses `$render(Component, props)` utility to achieve React like rendering without a virtual DOM or tagged templates.
 
-Though rendering systems in `koras.jsx` and `React` are similar, the operating systems in both frameworks are different because `koras.jsx` makes use of `nth = a + (n - 1)d` for its rendering and re-rendering algorithm in place of `Reconciliation`, `Diffing`, `Batching` and co. used in React.
+Though rendering systems in `koras.jsx` and `React` are similar, the operating systems in both frameworks are different because `koras.jsx` makes use of `nth = a + (n - 1)d` for its rendering and re-rendering algorithm in place of `Reconciliation`, `Diffing`, `Batching` and so on.
 
 Using `nth = a + (n - 1)d` in `koras.jsx` makes rendering very fast and state management more comfortable.
 
-Rendering and re-rendering often change the state of elements in a component. Learn more.
+Rendering and re-rendering often change the state of elements in a component. [Learn more](../utils/$render).
 
 ### Conditional rendering
 
@@ -198,7 +198,7 @@ return `
 
 ### Harmonious rendering
 
-An harmonious rendering happens when all nested functions and children components depend on their parent component for arguments or props. They do not have independent arguments or props of their own.
+An harmonious rendering happens when all nested functions and children components depend on their parent component for arguments or props. They do not take independent props or have side effect.
 
 ```js copy
 const Profile = memoize(({ user }) => {
@@ -213,11 +213,11 @@ const Profile = memoize(({ user }) => {
 });
 ```
 
-The component above is harmonious as the functions within it either take its props as an argument or take no argument. You can memoize an harmonious component or any of its content without worrying about any issue.
+The component above is harmonious as the functions within it either take its props as an argument or take no argument and without any side effect. You can memoize an harmonious component or any of its content without worrying about any issue.
 
 ### Disjointed rendering
 
-A disjointed rendering is the opposite of Harmonious Rendering as it only happens when some or all nested functions and children components have their own props or arguments which do not come from their parent component.
+A disjointed rendering is the opposite of Harmonious Rendering as it only happens when some or all nested functions and children components have their own props, arguments which do not come from their parent component or have side effect.
 
 ```js copy
 const Profile = ({ user }) => {

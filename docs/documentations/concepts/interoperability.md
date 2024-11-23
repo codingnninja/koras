@@ -14,7 +14,7 @@ function Notes({ notes, isBrowser }) {
     const noteElement = $select("#noteForm");
     const note = noteElement.value;
     localStorage.setItem("notes", JSON.stringify(notes));
-    return isBrowser { notes: notes.concat(note), isBrowser: true };
+    return { notes: notes.concat(note), isBrowser: true };
   };
 
   const props = isBrowser && saveNotes(notes);
