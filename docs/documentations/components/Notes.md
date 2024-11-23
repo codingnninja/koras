@@ -1,7 +1,7 @@
 # Notes component
 
 ```js
-function Notes({ noteId = 0, isBrowser } = {}) {
+function Notes(noteId = 0) {
   const note = $select(`state-${noteId}`);
   const nextNoteId = note ? Number(note.value) + 1 : 1;
 
@@ -10,18 +10,19 @@ function Notes({ noteId = 0, isBrowser } = {}) {
   }
 
   function saveNote() {
-    if (this.textContent === " ") return false;
-    const notes = $select("#notes");
+    const notes = $select("#notes:not(:last-child)");
+    console.log(notes);
+    if (notes.innerHTML === "") return false;
     localStorage.setItem("notes", notes.innerHTML);
   }
 
   return `
       <div id="container">
-        <input type="hidden" value="${nextNoteId}" id="state-${noteId}">
+        <input type="hidden" value="${nextNoteId}" id="state-${nextNoteId}">
         <div id="notes">
           ${getNotes()}
             <div
-              id="note-${noteId}"
+              id="note-${noteId + 1}"
               onblur="${saveNote()}"
               contenteditable=""
             > Note placeholder</div>
