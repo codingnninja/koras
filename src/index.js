@@ -968,10 +968,15 @@ function callFunctionWithElementsAndData(func, data) {
 }
 
 function $trigger(fn, event) {
-  if (typeof fn === 'function') {
+  if (typeof fn !== 'function') {
+      console.error('The first parameter for $trigger must be a function');
+      return;
+  }
+
+  if (event instanceof Event) {
       fn(event);
   } else {
-      console.error('First parameter must be a function');
+      console.error('The second parameter for $trigger must be an Event');
   }
 }
 
