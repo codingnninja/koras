@@ -327,7 +327,7 @@ function convertEventHandlerToExecutableFunction(input) {
     if (functionName.includes("console.log")) {
       return `${event}="${functionName}(${args})"`;
     }
-    return `${event}="\${$trigger(${functionName}, ${args})}"`;
+    return `${event}="\${__trigger(${functionName}, ${args})}"`;
   };
   return input.replace(regex, replaceFunction);
 }
@@ -967,7 +967,15 @@ function callFunctionWithElementsAndData(func, data) {
   } or the first argument passed to $trigger is not a function`;
 }
 
-function $trigger(func, data) {
+function $trigger(fn, event) {
+  if (typeof fn === 'function') {
+      fn(event);
+  } else {
+      console.error('First parameter must be a function');
+  }
+}
+
+function __trigger(func, data) {
   if (!isBrowser()) {
     throw "You cannot use $trigger on the server";
   }
@@ -1476,6 +1484,7 @@ function search(elements, constraints){
 function registerInternalUtils() {
   globalThis["$render"] = $render;
   globalThis["stringify"] = stringify;
+  globalThis["__trigger"] = __trigger;
   globalThis["$trigger"] = $trigger;
   globalThis["$select"] = $select;
   globalThis["$purify"] = $purify;
