@@ -21,13 +21,13 @@ hero:
 features:
   - icon: 🚀
     title: Ship fast & more
-    details: $render helps you ship fast by making hard features simple to implement.
+    details: koras.jsx helps you ship fast by making hard features simple to implement.
   - icon: ♨️
     title: Stop burning money
     details: It is designed to cut unnecessary operations that cost you more money.
   - icon: ⚖️
     title: Scale with ease
-    details: You don't need to worry about scaling as $render is simple to use and fun to scale.
+    details: You don't need to worry about scaling as koras.jsx is simple to use and fun to scale.
   - icon: 🎉
     title: Enjoy great experience
     details: Better life for users and developers out of the box without compromizing speed.
