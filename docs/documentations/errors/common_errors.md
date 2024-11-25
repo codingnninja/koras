@@ -15,3 +15,7 @@ This happens when `koras.jsx` is not installed, properly imported or linked.
 ### Error [object Object]
 
 Whenever you get `[object Object]` as an error in `koras.jsx`, you're most likely to have not registered your component with `$register`.
+
+### TypeError:
+
+Component is not a function in a ComponentName - points out you've not registered the compoent with `$register()`
