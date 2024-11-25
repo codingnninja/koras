@@ -19,23 +19,23 @@ import {
   $render,
   $register,
   $select,
-} from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/render.min.js";
+} from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/koras.min.js";
 ```
 
 ```sh [npm]
-$ npm install @codingnninja/render
+$ npm install @codingnninja/koras
 ```
 
 ```sh [pnpm]
-$ pnpm add @codingnninja/render
+$ pnpm add @codingnninja/koras
 ```
 
 ```sh [yarn]
-$ yarn add @codingnninja/render
+$ yarn add @codingnninja/koras
 ```
 
 ```sh [bun]
-$ bun add @codingnninja/render
+$ bun add @codingnninja/koras
 ```
 
 :::
@@ -51,7 +51,7 @@ Now, you can enjoy all the goodies that come with Koras.jsx.
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="module">
-      import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/render.min.js";
+      import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/koras.min.js";
     </script>
   </head>
   <body>
@@ -73,7 +73,7 @@ Now, you can enjoy all the goodies that come with Koras.jsx.
 ## Quick demo - Counter with $render (Node)
 
 ```js
-import { $render, $register } from "@codingnninja/render";
+import { $render, $register } from "@codingnninja/koras";
 
 const Counter = (count = 0) => {
   return `
@@ -104,7 +104,7 @@ $render(Counter);
       import {
         $render,
         $register,
-      } from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/render.min.js";
+      } from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/koras.min.js";
       const Counter = (count = 0) => {
         return `
           <div id="counter">
