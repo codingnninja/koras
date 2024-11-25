@@ -9,7 +9,7 @@ Note: Use Tailwind CSS to view Gallary properly.
 ### Import $render utilities
 
 ```js
-import { $render, stringify } from "@codingnninja/render";
+import { $render, stringify } from "@codingnninja/koras";
 ```
 
 ### Gallery component
