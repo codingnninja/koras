@@ -39,7 +39,7 @@ $select("selector(s)");
       <div class="result"></div>
     </div>
     <script type="module">
-      import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/render.min.js";
+      import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
       const [audio, posts, comments] = $select(".audio, .post, .comment");
       const firstPost = $select(".post[0]");
       const forthPost = $select(".post[3]");
