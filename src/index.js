@@ -943,6 +943,10 @@ function callFunctionWithElementsAndData(func, data) {
       ? func
       : new Function(`return ${normailzeQuotesInFunctionString(removeBreakLine(insertSemicolons(func.toString())))}`)();
 
+    if (data instanceof Event) {
+      return `(${funca})(event)`;
+    }
+
     let cleanedData;
     if (!data) {
       cleanedData = data;
@@ -967,23 +971,11 @@ function callFunctionWithElementsAndData(func, data) {
   } or the first argument passed to $trigger is not a function`;
 }
 
-function $trigger(fn, event) {
-  if (typeof fn !== 'function') {
-      console.error('The first parameter for $trigger must be a function');
-      return;
-  }
-
-  if (event instanceof Event) {
-      fn(event);
-  } else {
-      console.error('The second parameter for $trigger must be an Event');
-  }
-}
-
 function __trigger(func, data) {
   if (!isBrowser()) {
     throw "You cannot use $trigger on the server";
   }
+  
   try {
     let result = isBrowser() && callFunctionWithElementsAndData(func, data);
     return result;
@@ -1490,7 +1482,6 @@ function registerInternalUtils() {
   globalThis["$render"] = $render;
   globalThis["stringify"] = stringify;
   globalThis["__trigger"] = __trigger;
-  globalThis["$trigger"] = $trigger;
   globalThis["$select"] = $select;
   globalThis["$purify"] = $purify;
   globalThis["spreadKorasProps"] = spreadKorasProps;
@@ -1498,4 +1489,4 @@ function registerInternalUtils() {
 
 registerInternalUtils();
 
-export { $render, $select, $trigger, $register, stringify, $purify };
+export { $render, $select, $register, stringify, $purify };
