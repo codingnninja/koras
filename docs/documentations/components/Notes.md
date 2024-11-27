@@ -18,7 +18,7 @@ function Notes(noteId = 1) {
         ${getNotes()}
           <div
             class="note"
-            onblur="$trigger(${saveNote}, event)"
+            onblur="${saveNote(event)}"
             contenteditable=""
           >write note...</div>
       </div>
