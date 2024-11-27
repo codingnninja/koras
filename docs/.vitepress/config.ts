@@ -51,7 +51,6 @@ export default defineConfig({
           { text: "$register", link: "/documentations/utils/$register" },
           { text: "Stringify", link: "/documentations/utils/stringify" },
           { text: "$purify", link: "/documentations/utils/$purify" },
-          { text: "$trigger", link: "/documentations/utils/trigger" },
           { text: "RenderErrorLogger", link: "/documentations/utils/RenderErrorLogger" },
           { text: "RenderDomPurifier", link: "/documentations/utils/RenderDomPurifier" },
         ],
