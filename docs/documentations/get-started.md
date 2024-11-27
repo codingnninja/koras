@@ -19,7 +19,7 @@ import {
   $render,
   $register,
   $select,
-} from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/koras.min.js";
+} from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
 ```
 
 ```sh [npm]
@@ -51,7 +51,7 @@ Now, you can enjoy all the goodies that come with Koras.jsx.
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script type="module">
-      import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/koras.min.js";
+      import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
     </script>
   </head>
   <body>
@@ -104,7 +104,7 @@ $render(Counter);
       import {
         $render,
         $register,
-      } from "https://cdn.jsdelivr.net/npm/@codingnninja/render/dist/esm/koras.min.js";
+      } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
       const Counter = (count = 0) => {
         return `
           <div id="counter">
