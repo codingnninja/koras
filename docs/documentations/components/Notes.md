@@ -1,13 +1,13 @@
 # Notes component
 
 ```js
-function Notes(noteId = 1) {
+function Notes() {
   function getNotes() {
     return localStorage.getItem("notes") ?? "";
   }
 
   function saveNote(event) {
-    if (event.target.textContent.trim() === "write note...") return false;
+    $select(".note[delete|textContent=write note...]");
     const notes = $select("#notes");
     localStorage.setItem("notes", notes.innerHTML);
   }
@@ -18,7 +18,7 @@ function Notes(noteId = 1) {
         ${getNotes()}
           <div
             class="note"
-            onblur="${saveNote(event)}"
+            onblur="${saveNote()}"
             contenteditable=""
           >write note...</div>
       </div>
