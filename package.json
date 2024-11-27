@@ -1,6 +1,6 @@
 {
   "name": "@codingnninja/koras",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Enjoy simple, no-build and cross-platform UI composition in browsers and servers without a virtual DOM or tagged templates.",
   "author": "Ayobami Ogundiran (ayobami_ogundiran@yahoo.com)",
   "keywords": [
