@@ -1,4 +1,4 @@
-# $render utility
+# $trigger utility
 
 `$trigger` is a koras.jsx utility to call a function with an `Event`.
 
