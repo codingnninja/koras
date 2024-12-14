@@ -232,4 +232,4 @@ const Profile = ({ user }) => {
 };
 ```
 
-Memoizeing a disjointed component requires you to be extra careful to avoid unexpect challenges.
+Memoizing a disjointed component requires you to be extra careful to avoid unexpect challenges.
