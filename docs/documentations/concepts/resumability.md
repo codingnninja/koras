@@ -4,6 +4,6 @@ It is the ability of a component to change (stop, pause or continue) initiated o
 
 That is resumability in the context of `koras`.
 
-`$select` utilities make it possible to change operations of any elements in a `koras` component without re-rendering and re-hydration like in `React`.
+`$select` and `$render` utilities make it possible to change operations of any elements in a `koras` component without re-rendering and re-hydration like in `React`.
 
 Learn more about [$select](../utils/$select).
