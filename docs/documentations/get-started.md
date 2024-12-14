@@ -2,7 +2,7 @@
 
 Koras.jsx is a no-build JSX library that works in browsers and servers without a virtual DOM or tagged templates. It is simply the only kind of `JSX` that achieves the true aim of the web component without the known flaws.
 
-It introduces an intuitive state management system that makes `JSX` works everywhere, in browsers and servers by using an arithmetic progression fomular: `nth = a + (n - 1)d`.
+It introduces an intuitive state management system that makes `JSX` works everywhere, in browsers and servers by using an arithmetic progression formula: `nth = a + (n - 1)d`.
 
 It's intuitive, super fast and flexible.
 
@@ -41,6 +41,12 @@ $ bun add @codingnninja/koras
 :::
 
 Now, you can enjoy all the goodies that come with Koras.jsx.
+
+## Development tools
+
+- Install `VSCode` editor.
+- Install `leet-html` (a VSCode extension) for syntax highlighting.
+- Install `Auto complete tag` to automatically add close tag and rename paired tag.
 
 ## Quick Demo - Counter with $select (Browser)
 
