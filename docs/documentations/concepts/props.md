@@ -6,11 +6,11 @@ Props is the data or properties passed down to a JSX component as its attributes
 You don't need to wrap { } or ${ } in single or double quotes.
 :::
 
-```html
+```js
 <!-- dynamically -->
-<audio id="audio" song="${song}" />
+<Audio id="audio" song="${song}" />
 <!-- statically or server-rendered -->
-<audio song="{title:'go', url:'song.mp3'}" />
+<Audio song="{title:'go', url:'song.mp3'}" />
 ```
 
 `song` is a prop because it is passed to the `Audio` component as one of its attributes.
@@ -21,15 +21,15 @@ You don't need to wrap { } or ${ } in single or double quotes.
 
 ```js
 //dynamically
-<audio song=${song} />
-<audio song={song} />
+<Audio song=${song} />
+<Audio song={song} />
 //statically
-<audio song="{title:'go', url:'song.mp3'}" />
+<Audio song="{title:'go', url:'song.mp3'}" />
 ```
 
 ##### Passing down non-object data type as a prop
 
-To pass down non-object data type, we will add `double quotes("")` and won't use `{}` or `${}` as it is only meant for an object or an array of objects.
+To pass down non-object data type, we use `double quotes("")`, `${}`, `{}` or all of them together.
 
 - number
 
@@ -125,7 +125,7 @@ const Post = ({ post, editPost }) => {
 
 - Function calls in component body.
 
-You can call a funciton as in JavaScript within the body of a component. In this case, you don't need the `$trigger` utility.
+You can call a funciton as in JavaScript within the body of a component.
 
 ```js copy
 const LatestPost = (getLatestPost) => {
@@ -169,7 +169,7 @@ const Repeat = (status = false) => {
 - Passing down props
 
 ```js
-<audio
+<Audio
   song=${song)}
   autoplaySong=${autoplaySong}
 />
