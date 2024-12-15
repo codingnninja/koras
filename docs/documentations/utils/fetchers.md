@@ -126,7 +126,7 @@ There are six attributes and you have to use one of them whenever you use a data
 </ul>
 ```
 
-`data-after="#componentId"` is used to insert a component before another component.
+`data-after="#componentId"` is used to insert a component after another component.
 
 6. data-fallback
 
@@ -196,7 +196,7 @@ $render(Users, [{}, {}, {}])
 </button>
 ```
 
-### Inserting a component outside of current component
+### Inserting a component relative to another component
 
 In this case, fetcher attributes `data-after` or `data-before` must be used to insert component before or after another component.
 
