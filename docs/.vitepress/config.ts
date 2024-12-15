@@ -81,6 +81,7 @@ export default defineConfig({
           { text: "List", link: "/documentations/components/List" },
           { text: "Defer", link: "/documentations/components/Defer" },
           { text: "Menu", link: "/documentations/components/Menu" },
+          { text: "Clock", link: "/documentations/components/Clock" },
           { text: "ColorPicker", link: "/documentations/components/ColorPicker" },
           { text: "RenderErrorLogger", link: "/documentations/components/RenderErrorLogger" },
           { text: "RenderDomPurifier", link: "/documentations/components/RenderDomPurifier" },
