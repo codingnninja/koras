@@ -1,4 +1,4 @@
-import { $register } from "../../src/render";
+import { $register } from "../../../src/render";
 describe('Register only functions to the global scope', function() {
 
     it('should register a single function to the global scope', () => {

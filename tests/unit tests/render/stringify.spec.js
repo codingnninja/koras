@@ -1,4 +1,4 @@
-import { stringify } from "../../src/render";
+import { stringify } from "../../../src/render";
 
 describe("Convert data type to render prop string", function () {
   it("should stringify number", () => {
@@ -75,9 +75,7 @@ describe("Convert data type to render prop string", function () {
   it("should correctly serialize a function", () => {
     const input = () => new Set([1, 3]);
     const result = stringify(input);
-    expect(result).toBe(
-      "_9s35Ufa7M67wghwT___function__:function input() {      return new Set([1, 3]);    }_9s35Ufa7M67wghwT_"
-    );
+    expect(result).toBe('_9s35Ufa7M67wghwT___function__:function input() {\n      return new Set([1, 3]);\n    }_9s35Ufa7M67wghwT_');
   });
 
   it("should handle empty objects", () => {

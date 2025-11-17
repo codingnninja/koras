@@ -1,12 +1,12 @@
 "use strict";
 
+import { $select } from "../../dist/esm/query.js";
+
 import {
   $render,
-  $register,
-  stringify,
-  $select,
-  $purify,
-} from "../../dist/esm/koras.min.js";
+  $register
+} from "../../dist/esm/render.js";
+
 let playingInterval;
 
 /**All music information */
@@ -104,7 +104,7 @@ const updateRunningTime = (song) => {
     if (!appState.repeat) {
       appState.range.end = playingAudio.duration;
     }
-    appState.autopilotMode(playingAudio, song);
+    appState.autopilotMode(playingAudio);
   }
 
   playerSeekRange.value = playingAudio.currentTime;
@@ -124,8 +124,10 @@ const resolveVolume = (audio, song) => {
   $render(Volume, { song });
 };
 
-const autopilotMode = (audio, song) => {
-  const currentSong = typeof song === "string" ? $purify(song) : song;
+const autopilotMode = (audio) => {
+  const songs = appState.songs;
+  const id = audio.dataset.id
+  const currentSong = songs[id] ? songs[id] : songs[0];
   if (appState.repeat) {
     audio.currentTime = appState.range.start;
     audio.play();
@@ -170,7 +172,7 @@ const Playlist = ({ songs }) => {
       <div class="playlist" id="playlist" >
         <div style="display:flex; flex-direction: row; gap:5px; justify-content:center">
           <button class="btn-icon playing ${
-            !songs[0].isFromMyDevice ? "play-active" : "active"
+            !songs[0].isFromMyDevice ? 'play-active' : 'active'
           }"
           onclick="$render(Playlist, {props})"
           style="width: 50px; height: 50px;"
@@ -179,7 +181,7 @@ const Playlist = ({ songs }) => {
           </button> 
           <button 
           class="btn-icon playing ${
-            !songs[0].isFromMyDevice ? "active" : "play-active"
+            !songs[0].isFromMyDevice ? 'active' : 'play-active'
           }"
           onclick="$render(Playlist, {props})"
           style="width: 50px; height: 50px;"
@@ -194,7 +196,7 @@ const Playlist = ({ songs }) => {
         </small>
         ${
           songs
-            ? `<Songs songs=${stringify(songs)}/>`
+            ? `<Songs songs=${songs} />`
             : `<button onclick="$render(UploadSongsFromDevice)"> Load songs</button>`
         }
       </div>
@@ -236,9 +238,10 @@ const CurrentSongInformation = ({ song }) => {
     <audio 
       src=${song.musicPath} 
       id="audio-${song.id}" 
-      data-id="${song.id}" 
-      onEnded="appState.autopilotMode(this, '${song}')" 
-      onloadeddata="${updateDuration({selectors: `#audio-${song.id},#seek-${song.id}, #seek-right-${song.id}, #duration` })}" class="playing-audio"></audio>
+      data-id="${song.id - 1}" 
+      onEnded="appState.autopilotMode(this)"
+      onloadeddata="${updateDuration({selectors:`#audio-${song.id},#seek-${song.id}, #seek-right-${song.id}, #duration`})}" 
+      class="playing-audio"></audio>
     <figure class="music-banner">
     <img
       src="${song.posterUrl}"
@@ -416,7 +419,7 @@ const Play = ({ song }) => {
     <div id="play">
       <button class="btn-icon play ${
         song.isPlaying ? 'play-active' : ''
-      }" onclick="$render(Play, {props})" id="play-test">
+      }" onMousedown="$render(Play, ${props})" id="play-test">
         <span class="material-symbols-rounded default-icon">
             ${song.isPlaying ? "pause" : "play_arrow"}
         </span>
@@ -426,6 +429,7 @@ const Play = ({ song }) => {
 };
 
 const Next = ({ song }) => {
+  
   return `
     <div id="next">
       <button class="btn-icon">
@@ -458,9 +462,9 @@ const Shuffle = () => {
 
 const Repeat = () => {
   const repeat = () => {
-    appState.repeat = appState.repeat ? false : true;
-    $render(Repeat);
-  };
+    appState.repeat = !appState.repeat
+    $render(Repeat)
+  }
 
   return `
     <div id="repeat">
@@ -506,9 +510,8 @@ const Audio = ({ song }) => {
 
   return `
     <div id="${song.id}">
-      <input type="checkbox" name="select-song" id="check-${songId}"     class="selected-songs ${
-    song.isFromMyDevice ? 'hidden' : ''
-  }" ${song.isChecked ? "checked" : ""}>
+      <input type="checkbox" name="select-song" id="check-${songId}"     class="selected-songs ${song.isFromMyDevice ? 'hidden' : ''}" 
+      ${song.isChecked ? 'checked' : ''}>
       <button 
         class="music-item ${song.isPlaying ? 'playing' : ''}"
         id='playing-${song.id}' 
@@ -516,9 +519,7 @@ const Audio = ({ song }) => {
           selector: `#audio-${song.id}`,
           data: song.id - 1,
         })}">
-          <img src="${song.posterUrl}" width="800" height="800" alt="${
-    song.title
-  } Album Poster"
+          <img src="${song.posterUrl}" width="800" height="800" alt="${song.title} Album poster"
           class="img-cover">
           <div class="item-icon">
             <span class="material-symbols-rounded">equalizer</span>
@@ -634,7 +635,7 @@ function Loading(id) {
 
 const App = ({ songs, toggle }) => {
   return `
-    <div id="main">
+    <div id="app">
       <Header toggle=${toggle} />
       <article>
         <Playlist songs=${songs} />
@@ -675,17 +676,19 @@ globalThis["$select"] = $select;
 const start = performance.now();
   
 const a = await $render(App, { songs, toggle });
-
 const end = performance.now();
 const duration = end - start;
   
 console.log(`Execution time: ${duration.toFixed(4)}`);
-
 // if(a) {
 //   let [touchArea, overlay] = $select("#player, #overlay");
 //   console.log(touchArea)
 //   // startSwiping();
 //  }
+
+window.addEventListener("load", () => {
+  console.log(koras_bundle)
+})
 
 async function UploadSongsFromDevice() {
   async function scanFiles(directoryHandle) {

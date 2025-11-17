@@ -1,16 +1,33 @@
 import terser from "@rollup/plugin-terser";
-import pkg from "./package.json" with { "type": "json" };
 
-export default [
-  {
-    input: "src/index.js",
-    output: [{ name: "koras", file: pkg.module, format: "es" }],
+export default [{
+  input: {
+    render: 'src/render/index.js',
+    query: 'src/query/index.js',
   },
-  {
-    input: "src/index.js",
-    output: [{ name: "koras.min", file: pkg.module_min, format: "es" }],
-    plugins: [
-      terser()
-    ],
+
+  output: {
+    dir: 'dist',
+    format: 'esm',
+    entryFileNames: 'esm/[name].js',
+    sourcemap: true,
   },
+  preserveEntrySignatures: 'strict',
+},
+
+{
+  input: {
+    render: 'src/render/index.js',
+    query: 'src/query/index.js',
+  },
+
+  output: {
+    dir: 'dist',
+    format: 'esm',
+    entryFileNames: 'esm/[name].min.js',
+    sourcemap: true,
+  },
+  plugins: [terser()],
+  preserveEntrySignatures: 'strict',
+}
 ];

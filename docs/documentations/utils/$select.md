@@ -366,7 +366,7 @@ const posts = $select(".post[sort|order=lengthSortDesc]");
 
 ```js
 //usage as an event handler.
-$select("tr[search|textContent=*" + this.value + "]");
+$select(`.product[search|textContent=*` + this.value + `]`);
 
 //usage in a component
 const matchedRows = $select(`.row[search|textContent=*${searchTerm}]`);

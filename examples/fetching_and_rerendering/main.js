@@ -1,4 +1,5 @@
-import { $render, $register, $select } from "../../dist/esm/koras.min.js";
+import { $render, $register} from "../../dist/esm/render.js";
+import { $select} from "../../dist/esm/query.js";
 
 // const { $render, $register, stringify, $select, $purify } = render;
 const audioUrL = "a";
@@ -162,16 +163,22 @@ function App(props) {
   const { images, play } = props;
   return `
         <div id="app" style="color: #000;" class="hide">
+          <ListItems />
+          <Counteral />
+          <Counteral id=${1} />
+          <CounterFib />
           <Counter /><!-- It should count={0} should be made to work or give validation error.-->
           <Home 
             images=${props.images} 
             deeplyNested=${props.deeplyNested}
             details=${props.details}
             play=${props.play}
-            user=${{ images }}
+            user=${images}
           />
           <AddTodoForm />
-          <Others {...props} e="{true}" d="${1}" a="${() => new Map()}" audioUrL="a.mp3" anotherOne="nothing" />
+          <Others {...props} e="{true}" d="${1}" audioUrL="a.mp3" anotherOne="nothing" />
+
+          <TodoList />
         </div>
       `;
 }
@@ -181,7 +188,7 @@ export function Defer({ id, component, props }) {
         <div id="${id}" data-render="defer">
           <img src="https://cdn.pixabay.com/animation/2023/08/11/21/18/21-18-05-265_512.gif" style="width:32px" loading="lazy"> loading...
           <iframe 
-            onload="$render(${component}, '${stringify(props)}')" height="0">
+            onload="$render(${component}, ${props})" height="0">
           </iframe>
         </div>
       `;
@@ -200,18 +207,20 @@ const Home = ({ images, deeplyNested, ya, user }) => {
       <div id="page">
         <Gallary> 
           <CurrentImage 
-            src='{images[0].src}' 
-            alt={images[0].alt}
-            yes={test}
+            src='${images[0].src}' 
+            alt="${images[0].alt}"
+            yes="{test}"
+            something="{{test}}"
           />
-          <Pagination images="{images}" />
+          <Pagination images="{ images }" yes="{ test }" />
         </Gallary>
       </div>
     `;
 };
 const Others = (props) => {
-  console.log(props);
   const { images, play, pause, setVolume, audioUrL, memoize } = props;
+  console.log(props), "get jere md;";
+  
   return ` 
       <div id="page">
         <AudioPlayer
@@ -226,12 +235,104 @@ const Others = (props) => {
     `;
 };
 
+function Item({item, index}){
+  return`
+    <div id="item-${index}">${item}</div>
+  `;
+}
+
+function ListItems(props){
+//  const nums = props || [{id:1}, {id:2},{id:3}];
+  const nums = props || [1,2,3];
+  return`
+    <section id="list-items">
+      <div id="items">
+        <For 
+          each=${nums} 
+          render="Item" 
+          target="#items" 
+          position="append" 
+        /> 
+      </div>
+      <button 
+        onclick="$render(ListItems, ${[4,5,6,7]})"
+      > re-render </button>
+    </section>
+  `;
+}
+
 function InsertionTest() {
   return`
-    <div id="intest" data-after="#counter">
-      It works;
-    </div>
+    <Insert target="#counter" position="after">
+      <div id="intest">
+        It works;
+      </div>
+    </Insert>
   `
+}
+
+function TodoItem({ todo, toggleComplete }) {
+  console.log(`Rendering TodoItem: ${todo.text}`);
+  return `
+    <li id="item-${todo.id}">
+      <input
+        type="checkbox"
+        onChange="${toggleComplete(todo.id)}"
+      />
+      ${todo.text}
+    </li>
+  `;
+}
+
+function TodoList() {
+  const todos = [
+    { id: 1, text: 'Learn React', completed: false },
+    { id: 2, text: 'Build an app', completed: false },
+  ];
+
+  const toggleComplete = (id) => {
+    console.log(id);
+    const currentInput = $select(`#item-${id}>input`);
+    console.log(currentInput.checked);
+  };
+
+  return `
+      <ul id="todo-list">
+        ${todos.map(todo => `
+          <TodoItem 
+            id=${todo.id} 
+            todo=${todo}  
+            toggleComplete=${toggleComplete} />
+        `)}
+      </ul>
+  `;
+}
+
+function Counteral({ id=0, signalClass="count", count=0} = {}){
+
+  Signal({
+    when:"after",
+    signalClass,
+    count: count
+  });
+
+  return`
+    <div id="counteral-${id}" class="${signalClass}">
+      <button onclick="$render(Counteral, ${{signalClass, count: count + 1}})">
+        increment ${count}   
+      </button>
+    </div>
+  `;
+}
+
+function RealSignal({id=0, count=0}= {}){
+  return`
+    <select>
+      <Cart id="cart" count="${count}" />
+      <Counteral id="${id}" count="${count + 1}" />
+      <Counteral id="${id+1}" count="${count + 2}" />
+    </section>
+  `;
 }
 
 const Counter = (count = 0) => {
@@ -266,7 +367,7 @@ const Gallary = ({ children }) => {
 const Pagination = ({ images }) => {
   const listItems = images.map(
     (image, key) => `
-        <div id="${key}">
+        <div id="${key}" data-state="{{images}}">
           <img
             onClick="$render(CurrentImage, ${image})"
             class="h-auto max-w-full rounded-lg" 
@@ -287,6 +388,7 @@ const Pagination = ({ images }) => {
 const CurrentImage = ({ src, alt, yes }) => {
   // jjdjd
   /* kdkdk */
+  console.log(src, alt, yes)
   return `
         <div id="current-image">
           <img class="h-auto max-w-full rounded-lg" src="${src}" alt="${alt}">
@@ -305,34 +407,43 @@ function play(params) {
 }
 function pause(params) {
   const audio = $select(params.selector);
-  console.log(audio);
+  console.log(audio)
   // audio.pause();
   $render(AudioStatus, { msg: "Paused" });
 }
 
 function setVolume(params) {
-  const elements = $select(params.selector);
+  const elements = $select(params.selector)
   console.log(elements);
   console.log("it works");
   return (elements[0].volume = elements[1].value);
 }
 
 function AudioPlayer(props) {
-  const { images, audioUrL, play, pause, setVolume } = props
+  const { images, audioUrL, play, pause, setVolume } = props;
   const yoo = { fac: (a) => a };
+  const moo = { selector: `#myAudio` };
+  const yo = (a) => a;
+  if( 1 <= 1 || 2 >= 1){
+    console.log('it works');
+  }
+
 
   return `
       <audio src="${audioUrL}" id="myAudio"></audio>
+      <button onClick="${pause(moo)}"> Pause Audio </button>
       <button 
+        {yoo && audioUrL}
+        onFocus="{yo()}"
+        onBlur={yo()}
+        onChange="${ play() }"
         onClick="${play({
           item: images,
-          selector: "#myAudio",
+          selector: '#myAudio'
         })}" class="m-3">Play Audio </button> 
-      <button 
-        onClick="${pause({ selector: `#myAudio` })}"> Pause Audio </button>
       <input type="range" id="volume" min="0" max="1" step="0.01" value="1"
         onChange="${setVolume({ selector: `#myAudio, #volume` })}">
-      <button onClick="{console.log(Math.floor(5.2))}" >do something</button>
+      <button onClick="console.log(Math.floor(5.2))" >do something</button>
       <p id="audioStatus" class="text-center"></p>
     `;
 }
@@ -360,19 +471,26 @@ const Users = async () => {
     `;
 };
 
-const AddTodoForm = (id = 0) => {
+const MyTodo = ({ id=0 } = {}) => {
   const todoForm = $select(`#todo-form>:nth-last-child(2)`);
   id = todoForm ? Number(todoForm.dataset.id) + 1 : id;
 
   return `
+    <Insert target="btn" position="before">
+      <input type="text" id="input-${id}" data-id="${id}">
+    </Insert>
+  `;
+}
+const AddTodoForm = () => {
+  
+  return `
     <div 
       id="todo-form"
       class="todo-form" 
-      data-append="#todo-form"
-    >
-      <input type="text" id="input-${id}" data-id="${id}">
+    >  
+      <MyTodo id="0" />
+      <button id="btn" onclick="$render(MyTodo)">plus</button>
     </div>
-    <button onclick="$render(AddTodoForm)">plus</button>
   `;
 };
 
@@ -397,26 +515,273 @@ console.log(
   `)
 );
 
-$register(
-  InsertionTest,
-  AddTodoForm,
-  Users,
-  Home,
-  Others,
-  Defer,
-  Counter,
-  Gallary,
-  Pagination,
-  CurrentImage,
-  AudioStatus,
-  AudioPlayer,
-  RenderErrorLogger
-);
+function CounterFib(count=1) {
+  console.log(count)
+  console.log(count)
+  function fib(num) {
+    if (num <= 1) return 1;
+  
+    return fib(num - 1) + fib(num - 2);
+  }
+  
+  return`
+    <div id="counter-fib">
+      <button onClick="$render(CounterFib, ${count + 1})">Count: ${count}</button>
+      <If condition="${count > 0}" >
+        <div>1. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>2. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>3. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>4. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>5. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>6. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>7. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>8. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>9. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+        <div>10. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      </If>
+      <If condition="${count < 9}"> Count ${count} is less than 9 </If>
+      <If condition="${count > 9}"> Count ${count} is greater than 9 </If>
+      <If condition="${count === 9}"> Count ${count} is equal to 9 </If>
+    </div>
+    `;
+}
 
-const starta = performance.now();
-const a = await $render(App, state);
-const end = performance.now();
+function Toggle({ id, children} = {}){
+  return `
+    <section 
+      id="${id}" 
+      onclick="$select('#${id}[toggle|class=hidden]')">
+      ${children}
+    </section>
+  `;
+}
 
-const duration = end - starta;
-console.log(duration);
+function Toggler({ id, children, status=false} = {}){
+  return `
+    <section 
+      id="${id}" 
+      onclick="$render(Toggler, ${!status})">
+      ${children}
+    </section>
+  `;
+}
 
+function If({condition=false, children}={}){
+  if(!condition){
+    return " ";
+  }
+  return children;
+}
+
+function Else({condition=false, children}={}){
+  if(!condition){
+    return children;
+  }
+  return " ";
+}
+
+
+function For({ each=[], render, target="eueei", position, fallback} = {}){
+  let parent = target.startsWith("#") 
+      ? $select(target) 
+      : $select(`#${target}`);
+  
+  console.log(each)
+  const items = Array.isArray(each) ? each : JSON.parse(each);
+  const key = parent ? parent.children.length : items.length;
+  const lastItem = items[items.length - 1];
+  const lastKey = lastItem && (lastItem.id ?? lastItem);
+
+  if (parent && lastKey === Number(key)) {
+    return parent.innerHTML;
+  }
+
+  let children = items[0] && items.map((item, index) => {
+    index = parent? index + Number(parent.children.length) : index;
+    return globalThis[`${render}`]({item, index})
+  }).join(" ");
+
+  if(parent){
+    children = position === "prepend" 
+           ? `${children} ${parent.innerHTML}`
+           : `${parent.innerHTML} ${children}`;
+  }
+
+  return children;
+}
+
+function Insert({ position = "before", children, target } = {}) {
+  let el = document.createElement("div");
+  const targetComponent = target.startsWith("#") 
+  ? $select(target) 
+  : $select(`#${target}`);
+  
+  if (!targetComponent) {
+    return children.trim();
+  }
+
+  let nodes;
+
+  // Detect if children looks like raw text (no tags)
+  if (typeof children === "string" && !/<[a-z][\s\S]*>/i.test(children)) {
+    // Just a plain text string → make TextNode
+    nodes = [document.createTextNode(children.trim())];
+  } else {
+    el.innerHTML = children.trim();
+    nodes = Array.from(el.children);
+  } 
+
+  function handleOutboundInsertion(targetComponent, position){
+    // Decide reference node
+    const referenceNode = position === "before"
+      ? targetComponent
+      : targetComponent.nextSibling;
+
+    // Insert each node
+    nodes.forEach(node => {
+      if($select(`#${node.id}`) && node.dataset.once){
+        return " ";
+      }
+      targetComponent.parentNode.insertBefore(node, referenceNode);
+    });
+  }
+
+  handleOutboundInsertion(targetComponent, position)
+  return " ";
+}
+
+
+function Fore({ each = [], render, target, position, fallback }) {
+  const parent = $select(`#${target}`);
+  const children = each.length
+    ? each.map((item, index) => render({ item, index }))
+    : (typeof fallback === "function" ? fallback() : 'loading...');
+
+
+  if (!parent) return children;
+
+  const fragment = document.createDocumentFragment();
+  children.forEach(child => fragment.append(
+    child instanceof Node ? child : document.createTextNode(child)
+  ));
+
+  if (!position || position === "append") {
+    parent.append(fragment);
+  } else if (position === "prepend") {
+    parent.prepend(fragment);
+  } else if (position === "after") {
+    parent.after(fragment);
+  } else {
+    parent.insertAdjacentElement(position, fragment);
+  }
+
+  return children;
+}
+
+function Signal(props) {
+  //Stop if a signal is queued for propcessing
+  if(__$signal.props){
+    return " ";
+  }
+
+  //Stop if a signal is being processed
+  if(__$signal.props && __$signal.props.triggered){
+    return " ";
+  }
+
+  function extractKorasKeysFromHTML(el) {
+    if (!el || !el.innerHTML) return [];
+  
+    const results = [];
+    const renderCalls = el.innerHTML.match(/\$render\([^)]*\)/g);
+  
+    if (renderCalls) {
+      renderCalls.forEach(call => {
+        const match = call.match(/\$render\(\s*([a-zA-Z0-9_.$]+)\s*,\s*['"]?(koras_[a-zA-Z0-9_-]+)['"]?\s*\)/);
+        if (match) {
+          results.push({
+            component: match[1],
+            key: match[2]
+          });
+        }
+      });
+    }
+  
+    return results;
+  }
+
+  function triggerSubscribers(props) {
+    if (!props.signalClass) {
+        console.error("Missing signalClass in message.");
+        return " ";
+    }
+
+    const elements = document.querySelectorAll(`.${props.signalClass}`);
+    if (elements.length === 0) {
+        console.warn(`No elements found with class name`);
+        return " ";
+    }
+
+    elements.forEach(element => {
+      const id = element.id.split("-")[1];
+      if(id === props.id){
+        return " ";
+      }
+      const target = extractKorasKeysFromHTML(element);
+      delete globalThis[target[0].key];
+      const signalProps = { id, ...props};
+      $render(globalThis[target[0].component], signalProps); 
+    })
+
+    // clear any processed signal
+    __$signal = { }
+  }
+
+  globalThis.__$signal = {
+    action: triggerSubscribers,
+    props,
+    triggered: true
+  };
+
+ return " ";
+}
+
+async function startRendering(){
+  $register(
+    App,
+    Signal,
+    Counteral,
+    If,
+    For,
+    CounterFib,
+    TodoItem,
+    TodoList,
+    Insert,
+    MyTodo,
+    InsertionTest,
+    ListItems,
+    Item,
+    AddTodoForm,
+    Users,
+    Home,
+    Others,
+    Defer,
+    Counter,
+    Gallary,
+    Pagination,
+    CurrentImage,
+    AudioStatus,
+    AudioPlayer,
+    RenderErrorLogger
+  );
+  
+  const starta = performance.now();
+  const a = await $render(App, state);
+  const end = performance.now();
+  console.log(a)
+  const duration = end - starta;
+  console.log(duration);
+  console.log(koras_bundle)
+}
+
+startRendering();

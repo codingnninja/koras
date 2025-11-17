@@ -1,4 +1,4 @@
-import { $purify, stringify } from "../../src/render";
+import { $purify, stringify } from "../../../src/render/index.js";
 
 describe('Convert render prop string to equivalent data type', function() {
     it('should convert to undefined', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@codingnninja/koras",
-  "version": "0.0.2",
+  "version": "0.0.2-beta.1",
   "description": "Enjoy simple, no-build and cross-platform UI composition in browsers and servers without a virtual DOM or tagged templates.",
   "author": "Ayobami Ogundiran (ayobami_ogundiran@yahoo.com)",
   "keywords": [
@@ -8,7 +8,8 @@
     "React in the browser",
     "Server Component",
     "Client Component",
-    "JSX in the browser"
+    "JSX in the browser",
+    "Hybride component"
   ],
   "license": "ISC",
   "homepage": "https://github.com/codingnninja/koras#readme",
@@ -23,8 +24,11 @@
   "module_min": "dist/esm/koras.min.js",
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./dist/esm/koras.js"
+    "./render": {
+      "import": "./dist/esm/render.js"
+    },
+    "./query": {
+      "import": "./dist/esm/query.js"
     }
   },
   "scripts": {

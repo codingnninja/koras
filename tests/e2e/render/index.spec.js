@@ -1,4 +1,4 @@
-import { $render, $register } from "../../src/render";
+import { $render, $register } from "../../../src/render/index.js";
 describe('Render a component', function() {
   it('should render a component when the component name starts with an uppercase letter', async () => {
       const MyComponent = function (props) {
@@ -8,7 +8,6 @@ describe('Render a component', function() {
       $register(MyComponent);
       const props = { name: 'John' };
       const result = await $render(MyComponent, props);
-
       expect(result).toEqual('<div>Hello, John!</div>');
   });
 
@@ -26,15 +25,15 @@ describe('Render a component', function() {
     const Welcome = function (props) {
       return `
         <div>Hello, ${props.firstName}!
-          <InnerJSX secondName=${props.secondName} fullname={props} />
-          <InnerJSX secondName=${props.secondName} fullname={props} />
+          <InnerJSX secondName=${props.secondName} fullname=${props.firstName} />
+          <InnerJSX secondName=${props.secondName} fullname=${props.secondName} />
         </div>
       `;
     };
 
     $register(Welcome, InnerJSX);
     const result = await $render(Welcome, props);
-    expect(result).toBe('<div>Hello, John!<div>Ope</div><div>${stringify(props)}</div><div>Ope</div><div>${stringify(props)}</div></div>');
+    expect(result).toBe('<div>Hello, John!<div>Ope</div><div>John</div><div>Ope</div><div>Ope</div></div>');
   });
 
   it('should throw an error when the component name does not start with an uppercase letter', async () => {

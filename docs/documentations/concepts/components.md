@@ -10,6 +10,78 @@ Just like in a computer, koras components are detachable and pluggable to anothe
 
 :::
 
+## Why use components?
+
+Components are use for many reasons and two most important of all are `Composability` and `Reusability`.
+
+- Composibility
+
+This means you can combine many UI components or units to make main UIs.
+
+```jsx
+<App>
+  <Home />
+  <Profile />
+</App>
+```
+
+In `Koras.js`, the `id` in `<div id="app"></div>` is used to identify a component because it is unique. Component `id` is only useful for re-rendering and scoping stylesheet.
+
+```js
+export function Home() {
+  return `
+    <div id="home">
+      <img src="ayo.png" alt="Ayobami">
+      <style>
+        #home {}
+        #home img {}
+      </style>
+    </div>
+  `;
+}
+```
+
+Like that, you can collocate HTML, CSS and JavaScript for a component without worrying about affecting another component accidentally.
+
+- Reusability
+
+A reusable component can be reuse in another form, shape or style. It usually has dynamic `id`, `style` and `children` to be suitable for differenct contexts or needs.
+
+```js
+export function Layout({ name, style = "", children } = {}) {
+  return `
+    <div id="${name}">
+      ${children}
+
+      <style>
+        #${name} {}
+        #${name} img {}
+      </style>
+
+      //or 
+
+      <style>
+        ${style}
+      </style>
+    </div>
+  `;
+}
+```
+
+You can now reuse `Layout` as a compoennt.
+
+```js
+<Layout name="profile">
+  <img src="Ayobami.png" alt="Ayobami">
+</Layout>
+
+//or
+
+<Layout name="home">
+  <img src="Ayobami-at-home.png" alt="Ayobami at home">
+</Layout>
+```
+
 #### A component without props.
 
 ```js
