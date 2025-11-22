@@ -251,7 +251,6 @@ function quoteAttributes(str) {
     ) {
       return `${key}=${trimmed}`;
     }
-
     // Otherwise, quote it
     return `${key}="${trimmed}"`;
   });
@@ -1283,13 +1282,28 @@ function handleViewTransition(target, renderOnlyDOM){
     renderOnlyDOM();
   } 
 }
+
 function shouldStartTransition(domNode) {
+  if (
+    typeof document.startViewTransition !== "function" ||
+    !(domNode instanceof Element)
+  ) {
+    return false;
+  }
+
+  // Check the element itself OR any descendant
+  return domNode.matches("[view-transition-name]") ||
+    domNode.querySelector("[view-transition-name]");
+}
+
+
+/* function shouldStartTransition(domNode) {
   return (
     document.startViewTransition &&
     domNode instanceof Element &&
     domNode.hasAttribute('view-transition-name')
   );
-}
+} */
 
 /**
  * @desc renders client component
