@@ -79,6 +79,12 @@ function buildDataStructureFrom(queryString) {
     return processedConstraints;
   }
   
+  function tailwindToSelector(cls) {
+    return cls
+      .trim()
+      .replace(/:/g, '\\:'); // escape colon for CSS selector
+  }
+
   function $select(str, offSuperpowers = false) {
     if (!isBrowser()) {
       throw new Error("You cannot use $select on the server");
@@ -99,7 +105,7 @@ function buildDataStructureFrom(queryString) {
           selectorWithConstraints
         );
   
-        const nestedElements = _$(selector);
+        const nestedElements = _$(tailwindToSelector(selector));
         const modifiedElements = applyAction(nestedElements, constraints);
         const numberOfElementsSelected =
           modifiedElements === UNDEFINED ? UNDEFINED : modifiedElements.length;
