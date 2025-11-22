@@ -25,6 +25,19 @@ let patterns = {
   isNotTag: /^(?!<\w+\/?>$).+$/,
 };
 
+globalThis.koras_state = globalThis.koras_state || {};
+
+function __$setState(props) {
+  const key = `koras_${Math.random().toString(36).substring(2)}`;
+  globalThis.koras_state[key] = props;
+  return key;
+}
+
+function getState(key) {
+  const props = window.koras_state[key];
+  return props ? props : key;
+}
+
 function removeWhiteSpaceInOpeningTag(code) {
   return code.replace(/<(\w+)\s+>/g, '<$1>')
 }
@@ -243,7 +256,6 @@ function quoteAttributes(str) {
 
   return str.replace(regex, (match, key, value) => {
     const trimmed = value.trim();
-
     // If value already starts and ends with matching quotes, keep it as-is
     if (
       (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
@@ -567,20 +579,6 @@ function extractStandaloneExpressionsAsString(input) {
     }
   }
   return expressions;
-}
-
-
-globalThis.koras_state = globalThis.koras_state || {};
-
-function __$setState(props) {
-  const key = `koras_${Math.random().toString(36).substring(2)}`;
-  globalThis.koras_state[key] = props;
-  return key;
-}
-
-function getState(key) {
-  const props = window.koras_state[key];
-  return props ? props : key;
 }
 
 function handleSpreadProps(attribute) {
