@@ -1296,15 +1296,6 @@ function shouldStartTransition(domNode) {
     domNode.querySelector("[view-transition-name]");
 }
 
-
-/* function shouldStartTransition(domNode) {
-  return (
-    document.startViewTransition &&
-    domNode instanceof Element &&
-    domNode.hasAttribute('view-transition-name')
-  );
-} */
-
 /**
  * @desc renders client component
  * @param component func
