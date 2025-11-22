@@ -500,7 +500,7 @@ function RenderErrorLogger({ error }) {
   return "";
 }
 
-console.log($select(".post[0], .post[add|class=rubbish fade]"));
+console.log($select(".post[0], .post[add|class=rubbish fade, add|data-name=ayobami]"));
 console.log($select(".post:not(#e3)"));
 console.log($select(".post[filterOut|textContent=*m]"));
 console.log($select(".post[sort|order=lengthSortAsc]"));

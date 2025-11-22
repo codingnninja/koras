@@ -66,24 +66,44 @@ function buildDataStructureFrom(queryString) {
   
   function resolveMultipleAttributes(constraints) {
     let processedConstraints = [];
-    let depth = ZERO;
+    let depth = 0;
+  
     while (depth < constraints.length) {
       let splittedConstraints = constraints[depth].split("|").filter(Boolean);
+  
       const [action, paramString] = splittedConstraints;
+  
       const param = paramString
-        .split(/(\w+)(\!=|\-=|\+=|=\*|>=?|<=?|={1,2})(.+)/)
+        .split(/([\w-]+)(\!=|\-=|\+=|=\*|>=?|<=?|={1,2})(.+)/)
         .filter(Boolean);
+  
       processedConstraints.push([action.trim(), param]);
+  
       depth++;
     }
+  
     return processedConstraints;
   }
   
-  function tailwindToSelector(cls) {
-    return cls
+  
+  function tailwindToSelector(input) {
+    return input
       .trim()
-      .replace(/:/g, '\\:'); // escape colon for CSS selector
+      .split(/\s+/)
+      .map(token => {
+        // Tailwind classes that contain variants like hover:, sm:, group-hover:, etc.
+        const isTailwindClass = /^[a-zA-Z0-9_-]+:/.test(token);
+  
+        if (!isTailwindClass) {
+          return token; // return normal CSS selectors untouched
+        }
+  
+        // Escape only Tailwind variant colons
+        return token.replace(/:/g, '\\:');
+      })
+      .join(' ');
   }
+  
 
   function $select(str, offSuperpowers = false) {
     if (!isBrowser()) {
@@ -123,7 +143,7 @@ function buildDataStructureFrom(queryString) {
       if (elements[ZERO].length === ZERO) return null;
       return elements && elements.length === ONE ? elements[ZERO] : elements;
     } catch (error) {
-      callRenderErrorLogger(error);
+      console.error(error);
       console.error(
         `Oops! Check the selector(s) '${str}' provided for validity because it seems the target is not found. Or you can't use $select on the server.`
       );
@@ -218,6 +238,9 @@ function buildDataStructureFrom(queryString) {
   
   function setAttribute(elements, constraints) {
     const [action, params] = constraints;
+    if(params.length === 4){
+
+    }
     let [key, operator, value] = params;
     value = value.trim();
   
@@ -232,9 +255,12 @@ function buildDataStructureFrom(queryString) {
       } else if (operator === "+=" || operator === "-=") {
         const foundOperator = operators[operator](key, elements[i], value);
         elements[i][key] = foundOperator ? foundOperator : value;
+      } else if(key.startsWith('data-')) {
+        console.log(key, elements[i])
+        elements[i].setAttribute([key], value);
       } else {
         elements[i][key] = value;
-      }
+      } 
     }
   
     return elements;
@@ -323,3 +349,6 @@ function buildDataStructureFrom(queryString) {
   globalThis["$select"] = $select;
 
   export { $select }
+
+//git tag -a v0.1.2-beta.1 -m "Release v0.1.2-beta.1"
+//git push origin v0.1.2-beta.1
