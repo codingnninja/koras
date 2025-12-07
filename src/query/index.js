@@ -151,11 +151,19 @@ function buildDataStructureFrom(queryString) {
   }
   
   function applyAction(elements, constraints) {
-    if (typeof constraints === STRING && elements.length !== 0)
+
+    if (typeof constraints === STRING && elements.length !== 0){
       return elements[constraints];
-    if (!constraints && elements.length === ONE) return elements[0];
-    if (!constraints && elements.length > ONE) return elements;
-  
+    }
+
+    if (!constraints && elements.length === ONE) {
+      return elements[0];
+    }
+
+    if (!constraints && elements.length > ONE) {
+      return elements;
+    }
+    
     let depth = 0;
     let result = elements;
   
@@ -338,10 +346,18 @@ function buildDataStructureFrom(queryString) {
     const customParams = ['class', '=', 'hidden'];
     const [action, params] = constraints;
     setAttribute(elements, ["remove", customParams]);
-    if (params[2] === "*") return elements;
+
+    if (params[2] === "*") {
+      return elements;
+    }
+
     const filteringConstraint = ["filterOut", params];
     const filteredElements = filter(elements, filteringConstraint);
-    if (filteredElements.length === 0) return elements;
+
+    if (filteredElements.length === 0) {
+      return elements;
+    }
+    
     setAttribute(filteredElements, ["add", customParams]);
     return filteredElements;
   }
