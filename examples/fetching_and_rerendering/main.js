@@ -1,4 +1,4 @@
-import { $render, $register} from "../../dist/esm/render.js";
+import { $render, $register, If, For} from "../../dist/esm/render.js";
 import { $select} from "../../dist/esm/query.js";
 
 // const { $render, $register, stringify, $select, $purify } = render;
@@ -516,8 +516,7 @@ console.log(
 );
 
 function CounterFib(count=1) {
-  console.log(count)
-  console.log(count)
+  
   function fib(num) {
     if (num <= 1) return 1;
   
@@ -527,18 +526,16 @@ function CounterFib(count=1) {
   return`
     <div id="counter-fib">
       <button onClick="$render(CounterFib, ${count + 1})">Count: ${count}</button>
-      <If condition="${count > 0}" >
-        <div>1. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>2. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>3. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>4. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>5. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>6. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>7. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>8. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>9. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-        <div>10. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
-      </If>
+      <div>1. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>2. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>3. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>4. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>5. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>6. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>7. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>8. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>9. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
+      <div>10. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
       <If condition="${count < 9}"> Count ${count} is less than 9 </If>
       <If condition="${count > 9}"> Count ${count} is greater than 9 </If>
       <If condition="${count === 9}"> Count ${count} is equal to 9 </If>
@@ -566,22 +563,9 @@ function Toggler({ id, children, status=false} = {}){
   `;
 }
 
-function If({condition=false, children}={}){
-  if(!condition){
-    return " ";
-  }
-  return children;
-}
-
-function Else({condition=false, children}={}){
-  if(!condition){
-    return children;
-  }
-  return " ";
-}
 
 
-function For({ each=[], render, target="eueei", position, fallback} = {}){
+/* function For({ each=[], render, target="eueei", position, fallback} = {}){
   let parent = target.startsWith("#") 
       ? $select(target) 
       : $select(`#${target}`);
@@ -608,7 +592,7 @@ function For({ each=[], render, target="eueei", position, fallback} = {}){
   }
 
   return children;
-}
+} */
 
 function Insert({ position = "before", children, target } = {}) {
   let el = document.createElement("div");
