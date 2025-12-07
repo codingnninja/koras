@@ -252,18 +252,21 @@ function normalizeNumberOrBoolean(paramValue) {
 }
 
 function quoteAttributes(str) {
-  const regex = /(\w+)=([^=]+?)(?=\s+\w+=|$)/g;
-
+  const regex = /(\w+)=([^=\s]+)(?=\s+\w+=|$)/g;
   return str.replace(regex, (match, key, value) => {
     const trimmed = value.trim();
-    // If value already starts and ends with matching quotes, keep it as-is
-    if (
-      (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-      (trimmed.startsWith("'") && trimmed.endsWith("'"))
-    ) {
+
+    // if already quoted, leave it
+    if (trimmed.startsWith('"') || trimmed.startsWith("'")) {
       return `${key}=${trimmed}`;
     }
-    // Otherwise, quote it
+
+    // quote booleans also
+    if (trimmed === "true" || trimmed === "false") {
+      return `${key}="${trimmed}"`;
+    }
+
+    // quote numbers and text (your original behavior)
     return `${key}="${trimmed}"`;
   });
 }
@@ -797,8 +800,6 @@ export function extractInterpolation(tokens, index, errors = []) {
 export function isValidIdentifier(token) {
   return /^[a-zA-Z_$][\w$]*$/.test(token);
 }
-
-// tokenizer.js
 
 export function* tokenize(input) {
   let i = 0;
@@ -1416,22 +1417,6 @@ function $register(...args) {
   return globalThis;
 }
 
-// function arrowToNamed(name, arrowFn) {
-//   let src = arrowFn.toString().trim();
-//   // Replace the first "=>" with "{ return ... }" if it's an expression body
-//   if (!src.includes("{")) {
-//     // (x) => x+1   →   function Foo(x) { return x+1 }
-//     src = src.replace(/\s*=>\s*/, `) { return `) + ` }`;
-//   } else {
-//     // (x) => { ... } → function Foo(x) { ... }
-//     src = src.replace(/\s*=>\s*/, "");
-//   }
-
-//   // Insert function NAME
-//   src = src.replace(/^\s*\(/, `function ${name}(`);
-//   return Function(`return ${src}`)();
-// }
-
 function arrowToNamed(name, arrowFn) {
   let src = arrowFn.toString().trim();
 
@@ -1752,8 +1737,67 @@ function $purify(props, component) {
     console.error(`${error} in ${component}`);
   }
 }
+
+function If({condition=false, children} = {}){
+  return condition ? children : "";
+}
+
+function For({ each = [], render, target = "eueei", position, fallback } = {}) {
+  // Get parent element
+  let parent = target.startsWith("#") 
+      ? $select(target) 
+      : $select(`#${target}`);
+
+  // Parse items array if it's a string
+  const items = Array.isArray(each) ? each : JSON.parse(each);
+
+  // If no items, use fallback if provided
+  if (!items || items.length === 0) {
+    if (typeof fallback === "function") {
+      const fallbackContent = fallback();
+
+      // Append fallback instead of replacing innerHTML
+      if (parent) {
+        parent.innerHTML = position === "prepend"
+          ? `${fallbackContent} ${parent.innerHTML}`
+          : `${parent.innerHTML} ${fallbackContent}`;
+      }
+
+      return fallbackContent;
+    }
+    return typeof fallback === STRING ? fallback : 'loading...'; // No items and no fallback
+  }
+
+  const key = parent ? parent.children.length : items.length;
+  const lastItem = items[items.length - 1];
+  const lastKey = lastItem && (lastItem.id ?? lastItem);
+
+  // Avoid duplicate rendering if last key matches
+  if (parent && lastKey === Number(key)) {
+    return parent.innerHTML;
+  }
+
+  // Render children
+  let children = items.map((item, index) => {
+    index = parent ? index + Number(parent.children.length) : index;
+    return globalThis[`${render}`]({ item, index });
+  }).join(" ");
+
+  // Append or prepend to parent
+  if (parent) {
+    children = position === "prepend" 
+           ? `${children} ${parent.innerHTML}`
+           : `${parent.innerHTML} ${children}`;
+    parent.innerHTML = children; // update DOM
+  }
+
+  return children;
+}
+
 function registerInternalUtils() {
   globalThis["$render"] = $render;
+  globalThis["If"] = If;
+  globalThis["For"] = For;
   globalThis["stringify"] = stringify;
   globalThis["__trigger"] = __trigger;
   globalThis["$purify"] = $purify;
@@ -1768,5 +1812,7 @@ export {
   $render,
   $register,
   stringify,
-  $purify
+  $purify,
+  If,
+  For
 };
