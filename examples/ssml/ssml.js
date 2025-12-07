@@ -25,9 +25,9 @@ export function Speak({children}) {
   return children;
 }
 
-export function Mood({ tone = "neutral", children }) {
+export function Mood({ tone = "neutral", children } = {}) {
 
-    const tones = {
+  const tones = {
       // Positive
       excited:        { pitch: 1.3, rate: 1.2, volume: 1 },
       proud:          { pitch: 1.2, rate: 1.05, volume: 1 },
@@ -191,8 +191,8 @@ export function NaturalParagraph({
   return children;
 }
 
-export function Break({ time = "500ms" }) {
-    const ms = parseInt(time || '0', 10);
+export function Break({ time = "500ms" } = {}) {
+  const ms = parseInt(time || '0', 10);
     if (!isNaN(ms)) {
       speechQueue.push({ type: 'break', time: ms });
     }
