@@ -646,7 +646,7 @@ const App = ({ songs, toggle }) => {
   `;
 };
 
-$register(
+$register({
   App,
   Header,
   Player,
@@ -667,7 +667,7 @@ $register(
   Overlay,
   Loading,
   UploadSongsFromDevice
-);
+});
 
 globalThis["appState"] = appState;
 globalThis["$select"] = $select;
@@ -686,9 +686,6 @@ console.log(`Execution time: ${duration.toFixed(4)}`);
 //   // startSwiping();
 //  }
 
-window.addEventListener("load", () => {
-  console.log(koras_bundle)
-})
 
 async function UploadSongsFromDevice() {
   async function scanFiles(directoryHandle) {
