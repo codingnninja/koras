@@ -1383,37 +1383,47 @@ function transformTags(template, handleAttributes) {
   );
 }
 
+function isObject(components){
+   return Object.prototype.toString.call(components) === '[object Object]';
+}
+
 /**
  * Push function to the global scope
  * @param agrs functions
- * @return boolean
+ * @return globalThis
  */
-function $register(...args) {
-  if (isBrowser()) {
-    const bundle = document.querySelector('#koras_bundle');
-    if(bundle) return;
+
+function $register(components){
+
+  if(!isObject(components)){
+    throw('An object of components is expected like $register({Home, App})')
   }
 
-  const components = [...args];
-  let depth = ZERO;
+  for( const name in components){
 
-  while (components.length > depth) {
-    let component = components[depth];
+    let component = components[name];
+
+    if (typeof component !== FUNCTION) {
+      throw "Only functions are expected";
+    }
+
+    const isPreProcessed = component.toString().includes('stringify');
     
     if(isArrow(component)){
       component = arrowToNamed(component.name,  component);
     }
 
-    if (typeof component !== FUNCTION) {
-      throw "Only function is expected";
-    }
+    component = isPreProcessed 
+              ? component 
+              : makeFunctionFromString(component);
 
-    globalThis[component.name] = makeFunctionFromString(component);
-    bundle += "\n\r\n\r" + globalThis[component.name]; 
-    depth++;
+    Object.defineProperty(globalThis, name, {
+      value: component,
+      writable: false,
+      configurable: false,
+    })
   }
 
-  globalThis['koras_bundle'] = bundle;
   return globalThis;
 }
 
@@ -1677,7 +1687,14 @@ function __trigger(func, data) {
 }
 
 
-function stringify(prop, component) {
+function stringify(...args) {
+
+  if(args.length > 2) {
+    throw('An argument is expect. If you want more more, pass an object')
+  }
+
+  const prop = args[ZERO];
+  const component = args[ONE];
 
   try {
     if (
