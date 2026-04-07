@@ -93,11 +93,11 @@ function Audio(song) {
 - A number
 
 ```js
-const Counter = (count = 0) => {
+const Counter = ({ count = 0 } = {}) => {
   return `
       <div id="counter">
         <button 
-          onClick="$render(Counter, ${count + 1})" 
+          onClick="$render(Counter, ${{ count: count + 1 }})" 
           style="height:30px; width:100px">Count is ${count}
         </button>
       </div>
@@ -107,10 +107,13 @@ const Counter = (count = 0) => {
 
 - A funciton call as an event value
 
-Any function calls as a reponse to a DOM event like `onhover`, `onclick` and so on must be called directly just like in vanilla JavaScript.
+Any function calls as a reponse to a DOM event like `onmouseenter`, `onclick` and so on must be called directly just like in vanilla JavaScript.
 
 ```js
 const Post = ({ post, editPost }) => {
+  function editPost(post) {
+    //post is accessible here whether it is passed or not
+  }
   return `
       <div id="post">
         <h1>${post.title}</h1>
@@ -149,12 +152,15 @@ Note: Whenever you have to use a string containing `>` `<` and the like in the b
 
 ```js
 const Repeat = (status = false) => {
+  function reRender(status){
+    $render(Repeat, ${!status})
+  }
   return `
     <div id="repeat">
       <button class="btn-icon toggle">
-        <span 
+        <span
           class="material-symbols-rounded ${status ? "active" : ""}"
-          onclick="$render(Repeat, ${!status})"
+          onclick="${reRender(status)}"
         >
         ${status ? "repeat_one" : "repeat"}
         </span>
@@ -188,4 +194,4 @@ function Audio({ song, autoplaySong }) {
 }
 ```
 
-Yeah! That is how to pass down and use single and multiple props in `koras`.
+That is how to pass down and use single and multiple props in `koras`.

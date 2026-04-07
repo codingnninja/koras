@@ -1,7 +1,6 @@
 
 let _$;
 const STRING = "string";
-const FUNCTION = "function";
 const ZERO = 0;
 const ONE = 1;
 const UNDEFINED = undefined || "undefined";
@@ -10,19 +9,60 @@ if (typeof document !== UNDEFINED) {
   _$ = document.querySelectorAll.bind(document);
 }
 
-const isBrowser = (_) => {
-  if (typeof process === "object" && typeof require === FUNCTION) {
-    return false;
+function isBrowserDOM() {
+  return typeof window === "object" && typeof document === "object";
+}
+
+function toArray(value) {
+  if (!value) {
+    return [];
   }
 
-  if (typeof importScripts === FUNCTION) {
-    return false;
+  if (Array.isArray(value)) {
+    return value;
   }
 
-  if (typeof globalThis === "object") {
-    return true;
+  if (value instanceof Element) {
+    return [value];
   }
-};
+
+  if (typeof value.length === "number") {
+    return [...value];
+  }
+  
+  return [];
+}
+
+function normalizeResult(results, isMultiSelector) {
+  const flat = results.flat().filter(Boolean);
+
+  if (flat.length === 0) return null;
+
+  if (isMultiSelector) {
+    return flat;
+  }
+
+  return flat.length === 1 ? flat[0] : flat;
+}
+
+function tailwindToSelector(input) {
+  return input
+    .trim()
+    .split(/\s+/)
+    .map(token => {
+      // Tailwind classes that contain variants like hover:, sm:, group-hover:, etc.
+      const isTailwindClass = /^[a-zA-Z0-9_-]+:/.test(token);
+
+      if (!isTailwindClass) {
+        return token; // return normal CSS selectors untouched
+      }
+
+      // Escape only Tailwind variant colons
+      return token.replace(/:/g, '\\:');
+    })
+    .join(' ');
+}
+
 
 function buildDataStructureFrom(queryString) {
     let [selector, constraints] = resolveActionAndConstraints(queryString);
@@ -84,119 +124,7 @@ function buildDataStructureFrom(queryString) {
   
     return processedConstraints;
   }
-  
-  
-  function tailwindToSelector(input) {
-    return input
-      .trim()
-      .split(/\s+/)
-      .map(token => {
-        // Tailwind classes that contain variants like hover:, sm:, group-hover:, etc.
-        const isTailwindClass = /^[a-zA-Z0-9_-]+:/.test(token);
-  
-        if (!isTailwindClass) {
-          return token; // return normal CSS selectors untouched
-        }
-  
-        // Escape only Tailwind variant colons
-        return token.replace(/:/g, '\\:');
-      })
-      .join(' ');
-  }
-  
 
-  function $select(str, offSuperpowers = false) {
-    if (!isBrowser()) {
-      throw new Error("You cannot use $select on the server");
-    }
-  
-    if (typeof str !== STRING || str === "") {
-      throw new Error("$select expects a string of selectors");
-    }
-  
-    try {
-      const selectors = str.split(/,(?![^\[]*\])/);
-      let elements = [];
-      let depth = ZERO;
-  
-      while (selectors.length > depth) {
-        const selectorWithConstraints = selectors[depth];
-        const [selector, constraints] = buildDataStructureFrom(
-          selectorWithConstraints
-        );
-  
-        const nestedElements = _$(tailwindToSelector(selector));
-        const modifiedElements = applyAction(nestedElements, constraints);
-        const numberOfElementsSelected =
-          modifiedElements === UNDEFINED ? UNDEFINED : modifiedElements.length;
-        if (numberOfElementsSelected && !offSuperpowers) {
-          //turn grouped elements to a real array
-          const iterableGroupedElements = [...modifiedElements];
-          elements.push(iterableGroupedElements);
-        } else if (numberOfElementsSelected > ONE && offSuperpowers) {
-          elements.push(modifiedElements);
-        } else {
-          elements.push(modifiedElements);
-        }
-        depth++;
-      }
-      if (elements[ZERO].length === ZERO) return null;
-      return elements && elements.length === ONE ? elements[ZERO] : elements;
-    } catch (error) {
-      console.error(error);
-      console.error(
-        `Oops! Check the selector(s) '${str}' provided for validity because it seems the target is not found. Or you can't use $select on the server.`
-      );
-    }
-  }
-  
-  function applyAction(elements, constraints) {
-
-    if (typeof constraints === STRING && elements.length !== 0){
-      return elements[constraints];
-    }
-
-    if (!constraints && elements.length === ONE) {
-      return elements[0];
-    }
-
-    if (!constraints && elements.length > ONE) {
-      return elements;
-    }
-    
-    let depth = 0;
-    let result = elements;
-  
-    while (constraints && depth < constraints.length) {
-      const [action, constraint] = constraints[depth];
-      if (action === "delete") {
-        result = del(result, constraints[depth]);
-      } else if (action === "sort") {
-        result = sortElements(result, constraints[depth]);
-      } else if (action === "search") {
-        result = search(result, constraints[depth])
-      } else if (action.includes("filter")) {
-        result = filter(result, constraints[depth]);
-      } else if (constraints !== UNDEFINED) {
-        result = setAttribute(result, constraints[depth]);
-      }
-      depth++;
-    }
-  
-    return result;
-  }
-  
-  function fuzzyCompare(a, b, tolerance = 0.01) {
-    if (!isNaN(a) && !isNaN(b)) {
-      return Math.abs(Number(a) - Number(b)) <= tolerance;
-    } else {
-      return (
-        a.toLowerCase().includes(b.toLowerCase()) ||
-        b.toLowerCase().includes(a.toLowerCase())
-      );
-    }
-  }
-  
   const operators = {
     "=*": (key, element, value) => fuzzyCompare(element[key], value),
     ">": (key, element, value) => element[key] > value,
@@ -208,6 +136,25 @@ function buildDataStructureFrom(queryString) {
     "+=": (key, element, value) => Number(element[key]) + Number(value),
     "-=": (key, element, value) => Number(element[key]) - Number(value),
   };
+
+  function makeTag(index) {
+    const div = document.createElement("div");
+    div.id = index;
+    return div;
+  }
+
+  function fuzzyCompare(a, b, tolerance = 0.01) {
+    if (!isNaN(a) && !isNaN(b)) {
+      return Math.abs(Number(a) - Number(b)) <= tolerance;
+    } else {
+      return (
+        a.toLowerCase().includes(b.toLowerCase()) ||
+        b.toLowerCase().includes(a.toLowerCase())
+      );
+    }
+  }
+  
+ 
   
   function del(elements, constraints) {
     const [action, params] = constraints;
@@ -264,7 +211,6 @@ function buildDataStructureFrom(queryString) {
         const foundOperator = operators[operator](key, elements[i], value);
         elements[i][key] = foundOperator ? foundOperator : value;
       } else if(key.startsWith('data-')) {
-        console.log(key, elements[i])
         elements[i].setAttribute([key], value);
       } else {
         elements[i][key] = value;
@@ -272,13 +218,6 @@ function buildDataStructureFrom(queryString) {
     }
   
     return elements;
-  }
-  
-  
-  function makeTag(index) {
-    const div = document.createElement("div");
-    div.id = index;
-    return div;
   }
   
   function filter(elements, constraints) {
@@ -361,6 +300,126 @@ function buildDataStructureFrom(queryString) {
     setAttribute(filteredElements, ["add", customParams]);
     return filteredElements;
   }
+
+  function applyAction(elements, constraints) {
+
+    if (typeof constraints === STRING) {
+      const index = Number(constraints);
+      return Number.isInteger(index) && index >= 0 && index < elements.length
+        ? elements[index]
+        : null;
+    }
+    
+    if (!constraints && elements.length === ONE) {
+      return elements[ZERO];
+    }
+
+    if (!constraints && elements.length > ONE) {
+      return elements;
+    }
+    
+    let depth = 0;
+    let result = elements;
+  
+    while (constraints && depth < constraints.length) {
+      const [action, constraint] = constraints[depth];
+      if (action === "delete") {
+        result = del(result, constraints[depth]);
+      } else if (action === "sort") {
+        result = sortElements(result, constraints[depth]);
+      } else if (action === "search") {
+        result = search(result, constraints[depth])
+      } else if (action.includes("filter")) {
+        result = filter(result, constraints[depth]);
+      } else if (constraints !== UNDEFINED) {
+        result = setAttribute(result, constraints[depth]);
+      }
+      depth++;
+    }
+  
+    return result;
+  }
+  
+  function $select(str, offSuperpowers = false) {
+    if (!isBrowserDOM()) {
+      throw new Error("You cannot use $select on the server");
+    }
+  
+    if (typeof str !== STRING || !str.trim()) {
+      throw new Error("$select expects a string of selectors");
+    }
+  
+    const selectors = str.split(/,(?![^\[]*\])/);
+  
+    // 🔥 POWER OFF MODE
+    if (offSuperpowers) {
+      return selectors.length === ONE
+        ? _$(tailwindToSelector(selectors[ZERO].trim()))
+        : selectors.map(sel => _$(tailwindToSelector(sel.trim())));
+    }
+  
+    // ↓ POWER ON MODE (smart path)
+    const isMultiSelector = selectors.length > ONE;
+    let collected = [];
+  
+    for (let i = 0; i < selectors.length; i++) {
+      const raw = selectors[i].trim();
+      if (!raw) continue;
+  
+      const [selector, constraints] = buildDataStructureFrom(raw);
+      const nodeList = _$(tailwindToSelector(selector));
+      const result = applyAction(nodeList, constraints);
+  
+      collected.push(toArray(result));
+    }
+  
+    return normalizeResult(collected, isMultiSelector);
+  }
+  
+  /* function $select(str, offSuperpowers = false) {
+    if (!isBrowserDOM()) {
+      throw new Error("You cannot use $select on the server");
+    }
+  
+    if (typeof str !== STRING || str === "") {
+      throw new Error("$select expects a string of selectors");
+    }
+  
+    try {
+      const selectors = str.split(/,(?![^\[]*\])/);
+      let elements = [];
+      let depth = ZERO;
+  
+      while (selectors.length > depth) {
+        const selectorWithConstraints = selectors[depth];
+        const [selector, constraints] = buildDataStructureFrom(
+          selectorWithConstraints
+        );
+  
+        const nestedElements = _$(tailwindToSelector(selector));
+        const modifiedElements = applyAction(nestedElements, constraints);
+        const numberOfElementsSelected =
+          modifiedElements === UNDEFINED ? UNDEFINED : modifiedElements.length;
+        if (numberOfElementsSelected && !offSuperpowers) {
+          //turn grouped elements to a real array
+          const iterableGroupedElements = [...modifiedElements];
+          elements.push(iterableGroupedElements);
+        } else if (numberOfElementsSelected > ONE && offSuperpowers) {
+          elements.push(modifiedElements);
+        } else {
+          elements.push(modifiedElements);
+        }
+        depth++;
+      }
+      if (elements[ZERO].length === ZERO) return null;
+      return elements && elements.length === ONE ? elements[ZERO] : elements;
+    } catch (error) {
+      console.error(error);
+      console.error(
+        `Oops! Check the selector(s) '${str}' provided for validity because it seems the target is not found. Or you can't use $select on the server.`
+      );
+    }
+  } */
 
   globalThis["$select"] = $select;
 

@@ -1,4 +1,4 @@
-import { $render, $register, If, For} from "../../dist/esm/render.js";
+import { $render, $register, If} from "../../dist/esm/render.js";
 import { $select} from "../../dist/esm/query.js";
 
 // const { $render, $register, stringify, $select, $purify } = render;
@@ -217,6 +217,7 @@ const Home = ({ images, deeplyNested, ya, user }) => {
       </div>
     `;
 };
+
 const Others = (props) => {
   const { images, play, pause, setVolume, audioUrL, memoize } = props;
   console.log(props), "get jere md;";
@@ -235,28 +236,40 @@ const Others = (props) => {
     `;
 };
 
-function Item({item, index}){
+function Item({item} = {}){
   return`
-    <div id="item-${index}">${item}</div>
+    <div id="item-${item.id}">${item.id}</div>
   `;
 }
 
-function ListItems(props){
-//  const nums = props || [{id:1}, {id:2},{id:3}];
-  const nums = props || [1,2,3];
+function For({id, component, items, fallback}){
+
   return`
-    <section id="list-items">
-      <div id="items">
-        <For 
-          each=${nums} 
-          render="Item" 
-          target="#items" 
-          position="append" 
-        /> 
-      </div>
-      <button 
-        onclick="$render(ListItems, ${[4,5,6,7]})"
-      > re-render </button>
+  <section id="items-${id}"
+    ${
+      items && items.length !== 0 ? items.map(item => `
+        <${component} {...item} />
+      `) : typeof fallback === "function" ? fallback() : fallback
+    }
+  </section>
+  `
+}
+
+
+function ListItems({items = [{id:1}, {id:2},{id:3}]} = {}){
+
+  return`
+    <section id="list">
+      <section id="items">
+        ${
+          items && items.length !== 0 ? items.map(item => `
+            <Item item=${item} />
+          `) : 'No Item found'
+        }
+        </section>
+        <button 
+          onclick="$render(ListItems, ${{items:[{id:4}, {id:5},{id:6}]}})"
+        > re-render </button>
     </section>
   `;
 }
@@ -310,11 +323,11 @@ function TodoList() {
 
 function Counteral({ id=0, signalClass="count", count=0} = {}){
 
-  Signal({
-    when:"after",
-    signalClass,
-    count: count
-  });
+  // Signal({
+  //   when:"after",
+  //   signalClass,
+  //   count: count
+  // });
 
   return`
     <div id="counteral-${id}" class="${signalClass}">
@@ -335,7 +348,7 @@ function RealSignal({id=0, count=0}= {}){
   `;
 }
 
-const Counter = (count = 0) => {
+const Counter = ({count = 0} = {}) => {
   const memoize = () => {
     alert("working")
     console.log("works");
@@ -345,7 +358,7 @@ const Counter = (count = 0) => {
       <div id="counter">
       <div>${count}</div>
         <button 
-          onClick="$render(Counter, ${count + 1})" 
+          onClick="$render(Counter, ${{count: count + 1}})" 
           style="height:30px; width:50px">Increase
         </button>
         <button 
@@ -401,19 +414,19 @@ function AudioStatus({ msg }) {
 }
 function play(params) {
   const audio = $select(params.selector);
-  console.log(audio)
+  console.log(audio);
   // audio.play();
   $render(AudioStatus, { msg: "Playing" });
 }
 function pause(params) {
   const audio = $select(params.selector);
-  console.log(audio)
+  console.log(audio);
   // audio.pause();
   $render(AudioStatus, { msg: "Paused" });
 }
 
 function setVolume(params) {
-  const elements = $select(params.selector)
+  const elements = $select(params.selector);
   console.log(elements);
   console.log("it works");
   return (elements[0].volume = elements[1].value);
@@ -515,7 +528,7 @@ console.log(
   `)
 );
 
-function CounterFib(count=1) {
+function CounterFib({count=1} = {}) {
   
   function fib(num) {
     if (num <= 1) return 1;
@@ -525,7 +538,7 @@ function CounterFib(count=1) {
   
   return`
     <div id="counter-fib">
-      <button onClick="$render(CounterFib, ${count + 1})">Count: ${count}</button>
+      <button onClick="$render(CounterFib, ${{count: count + 1}})">Count: ${count}</button>
       <div>1. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
       <div>2. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
       <div>3. ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)} ${fib(count)}</div>
@@ -731,12 +744,10 @@ function Signal(props) {
 }
 
 async function startRendering(){
-  $register(
+  $register({
     App,
-    Signal,
     Counteral,
     If,
-    For,
     CounterFib,
     TodoItem,
     TodoList,
@@ -757,7 +768,7 @@ async function startRendering(){
     AudioStatus,
     AudioPlayer,
     RenderErrorLogger
-  );
+});
   
   const starta = performance.now();
   const a = await $render(App, state);
@@ -765,7 +776,7 @@ async function startRendering(){
   console.log(a)
   const duration = end - starta;
   console.log(duration);
-  console.log(koras_bundle)
+  // console.log(koras_bundle)
 }
 
 startRendering();

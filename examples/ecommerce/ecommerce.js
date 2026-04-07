@@ -1,31 +1,5 @@
 import { $render, $register} from "../../dist/esm/render.js";
 import { $select} from "../../dist/esm/query.js";
-
-function Home(props){
-    console.log(props)
-}
-
-function Profile(props){
-    return props;
-}
-function Counter(count=0){
-    const props = count + 1;
-    console.log(count, props);
-
-    return {
-        count,
-        render: (component, props) => component(props),
-        reRender: () => Counter(props)
-    }
-}
-
-let counter = Counter()
-counter
-    .reRender()
-    .reRender()
-    .reRender()
-    .reRender()
-
   
 function TodoApp(props) {
     function addTodo(props) {
@@ -140,7 +114,7 @@ function ProductList(props) {
 }
 
 
-$register(ProductList);
+$register({ProductList});
 
 function StorageUtils(){
   function loadCart() {
@@ -290,7 +264,7 @@ function ShoppingCart(props) {
   }
 }
 
-$register(ShoppingCart, StorageUtils);
+$register({ShoppingCart, StorageUtils});
 
 function App(props) {
   const state = {
@@ -320,10 +294,9 @@ function CreateStorage(storageKey = 'todos'){
   }
 }
 
-$register(App);
+$register({App, TodoApp});
 
 $render(App, StorageUtils());
 
-$register(TodoApp);
 $render(TodoApp, {todos:[]})
          

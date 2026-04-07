@@ -1,6 +1,6 @@
 # $render utility
 
-$render adds JSX to the DOM with the `#root id` or a target `id` of a component. It makes using JSX directly in the browser without a virtual DOM or tagged templates possible.
+$render adds `JSX-like` tags to the DOM with the `#root id` or a target `id` of a component. It enables JSX-like tags directly in browsers without a virtual DOM or tagged templates.
 
 ```js copy
 $render(Component, props?optional);
@@ -8,19 +8,20 @@ $render(Component, props?optional);
 
 ## Rendering
 
-It is adding JSX to the DOM that happens in the browser without any user interactions with the DOM elements.
+It is adding JSX to the DOM that happens in browsers without any user interactions with the DOM elements.
 
 - Rendering without props
 
 ```js
 function Profile() {
   return `
-      <div id="1"> 
+      <div id="profile-1"> 
         Ayobami Ogundiran
       </div>
     `;
 }
 
+$register({ Profile });
 $render(Profile); //without props
 ```
 
@@ -37,43 +38,50 @@ function Profile(item) {
   //without default value
   return `
       <div
-        id=${item.id}
+        id="profile-${item.id}"
         person=${item.person)}>
         ${item.children.a}
       </div>
     `;
 }
 
+$register({ Profile });
 $render(Profile, item); //with props
 ```
 
 ## Re-rendering
 
-It is adding JSX to the DOM that happens in the browser when you interact with the DOM.
+It is adding JSX to the DOM that happens in browsers when you interact with the DOM.
 
 :::info
-Note: A re-renderable component must have a wrapping `div` tag with an `ID`.
+Note: The wrapping tag of a re-renderable component must have an `ID`.
 :::
 
 - Self-contained re-rendering
 
 ```js
-const Shuffle = (status = false) => {
+const Shuffle = ({ status = false } = {}) => {
+  function reRender() {
+    $render(Shuffle, { status: true });
+  }
+
   return `
     <div id="shuffle">
       <button class="btn-icon toggle">
         <span 
           class="material-symbols-rounded ${status ? "active" : ""}"
-          onclick="$render(Shuffle, ${!status})"
+          onclick=${reRender()}
         >shuffle ${status} </span>
       </button>
     </div>
   `;
 };
+
+$register({ Shuffle });
 $render(Shuffle);
 ```
 
-In the code above, you would notice we use `$render(Shuffle, ${!status})` to make `Shuffle` re-render itself whenever the shuffle button is clicked.
+In the code above, you would notice we use `$render(Shuffle, {status: true})` to make `Shuffle` re-render itself whenever the shuffle button is clicked.
 
 - Re-rendering from a controller
 
@@ -82,27 +90,27 @@ You might need to perform some operations you don't want to tie to a component, 
 - A re-usable utility
 
 ```js
-function toggle(status) {
-  $render(Shuffle, !status);
+function Utils(status) {
+  return {
+    toggle(status) {
+      $render(Shuffle, !status);
+    },
+  };
 }
 
-const utils = {
-  toggle,
-};
-
-globalThis["$utils"] = utils;
+$register({ Utils });
 ```
 
 - Use the utility in a component
 
 ```js
-export const Shuffle = (status = false) => {
+export const Shuffle = ({ status = false } = {}) => {
   return `
      <div id="shuffle">
        <button class="btn-icon toggle">
          <span
            class="material-symbols-rounded ${status ? "active" : ""}"
-           onclick="$utils.toggle(${status})"
+           onclick="Utils().toggle(${status})"
          >shuffle ${status} </span>
        </button>
      </div>
@@ -110,11 +118,12 @@ export const Shuffle = (status = false) => {
 };
 ```
 
-You can import the utils from a module directly in `Shuffle` using `import()`.
+You can also import utils directly from `Shuffle` using `import()`. Note that units or modules not accessible in the global scope are not accessible within a component.
 
 ```js
 export const Shuffle = async (status = false) => {
-  const { toggle } = import(_$links.utils);
+  const { toggle } = await import(_$links.utils);
+
   return `
      <div id="shuffle">
        <button class="btn-icon toggle">
@@ -139,4 +148,4 @@ $render(Shuffle);
 
 If you have rendered `Shuffle`, you need to remove `$render(Shuffle);` at the end of the code snippets above.
 
-`$render` is a built-in utility to render and re-render JSX without a virtual DOM or tagged templates.
+`$render` is a built-in utility to render and re-render web-JSX without a virtual DOM, compilation or tagged templates.

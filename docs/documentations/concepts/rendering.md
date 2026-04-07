@@ -2,9 +2,9 @@
 
 Rendering refers to the process of displaying or updating the user interface of a web application. `koras` uses `$render(Component, props)` utility to achieve React like rendering without a virtual DOM or tagged templates.
 
-Though rendering systems in `koras.jsx` and `React` are similar, the operating systems in both frameworks are different because `koras.jsx` makes use of `nth = a + (n - 1)d` for its rendering and re-rendering algorithm in place of `Reconciliation`, `Diffing`, `Batching` and so on.
+Though rendering systems in `koras` and `React` are similar, the operating systems in both frameworks are different because `koras` makes use of `Lazy recursion` or `Ayo's recursion` for its rendering and re-rendering algorithm in place of `Reconciliation`, `Diffing`, `Batching` and so on.
 
-Using `nth = a + (n - 1)d` in `koras.jsx` makes rendering very fast and state management more comfortable.
+Using `Lazy recursion` makes rendering fast and state management more comfortable in koras.
 
 Rendering and re-rendering often change the state of elements in a component. [Learn more](../utils/$render).
 

@@ -1,14 +1,22 @@
 "use strict";
 
-import { $select } from "../../dist/esm/query.js";
+import { $select } from "../../dist/esm/query.min.js";
 
 import {
   $render,
-  $register
-} from "../../dist/esm/render.js";
+  $register,
+  stringify,
+  $purify
+} from "../../dist/esm/render.min.js";
 
 let playingInterval;
 
+function me(){}
+const stringMe = stringify(me);
+const str = stringify({
+  a: "me",
+  me
+})
 /**All music information */
 const songs = [
   {
@@ -64,6 +72,7 @@ const getSong = async (index) => {
     $render(Play, { song });
   }
 };
+
 const getSelectedSongsForDownload = () => {
   const selectedSongsIDs = $select(".selected-songs");
   const selectedSongs = appState.songs.map((song, index) => {
@@ -212,11 +221,52 @@ const Overlay = ({ toggle }) => {
 };
 
 const CurrentSong = ({ song }) => {
+  const updateDuration = (params) => {
+    const elements = $select(params.selectors);
+    const [audio, playerSeekRange, endRange, playerDuration] = elements;
+    playerSeekRange.max = Math.ceil(audio.duration);
+    endRange.max = playerSeekRange.max;
+    endRange.value = playerSeekRange.max;
+    appState.range.end = playerSeekRange.max;
+    playerDuration.textContent = appState.getTimecode(
+      Number(playerSeekRange.max)
+    );
+  };
+
   return `
     <div class="container" id="playing-song">
-      <CurrentSongInformation 
-        song="{song}" 
-      />
+      <audio 
+        src=${song.musicPath} 
+        id="audio-${song.id}" 
+        data-id="${song.id - 1}" 
+        onEnded="appState.autopilotMode(this)"
+        onloadeddata="${updateDuration({selectors:`#audio-${song.id},#seek-${song.id}, #seek-right-${song.id}, #duration`})}" 
+        class="playing-audio">
+      </audio>
+      <figure class="music-banner">
+        <img
+          src="${song.posterUrl}"
+          width="800"
+          height="800"
+          alt="Wotakoi: Love is Hard for an Otaku Album Poster"
+          class="img-cover"
+        />
+      </figure>
+
+      <div class="music-content">
+        <h2 class="headline-sm">
+          ${song.title}
+        </h2>
+
+        <p class="label-lg label-wrapper wrapper">
+          <span>${song.album}</span>
+          <span>${song.year}</span>
+        </p>
+
+        <p class="label-md artist">${song.artist}</p>
+        <SeekControl song={song} />
+        <Controller song={song} />
+      </div>
     </div>
   `;
 };
@@ -235,43 +285,13 @@ const CurrentSongInformation = ({ song }) => {
   };
 
   return `
-    <audio 
-      src=${song.musicPath} 
-      id="audio-${song.id}" 
-      data-id="${song.id - 1}" 
-      onEnded="appState.autopilotMode(this)"
-      onloadeddata="${updateDuration({selectors:`#audio-${song.id},#seek-${song.id}, #seek-right-${song.id}, #duration`})}" 
-      class="playing-audio"></audio>
-    <figure class="music-banner">
-    <img
-      src="${song.posterUrl}"
-      width="800"
-      height="800"
-      alt="Wotakoi: Love is Hard for an Otaku Album Poster"
-      class="img-cover"
-    />
-  </figure>
-
-  <div class="music-content">
-    <h2 class="headline-sm">
-      ${song.title}
-    </h2>
-
-    <p class="label-lg label-wrapper wrapper">
-      <span>${song.album}</span>
-      <span>${song.year}</span>
-    </p>
-
-    <p class="label-md artist">${song.artist}</p>
-    <SeekControl song={song} />
-    <Controller song={song} />
-  </div>
+    
   `;
 };
 
 const SeekControl = ({ song }) => {
   return `
-    <div class="seek-control">
+    <div class="seek-control" id="seek-control">
       <ProgressIndicator song=${song} />
       <Volume song=${song}/>
     </div>
@@ -328,7 +348,7 @@ const ProgressIndicator = ({ song }) => {
     const [audio, runningTime, seekRange, rangeFill] = elements;
     audio.currentTime = seekRange.value;
 
-    appState.range.start = Number(seekRange.value);
+    appState.range.start = Number(seekRange.value)
     runningTime.textContent = appState.getTimecode(appState.range.start);
 
     const rangeValue = (seekRange.value / seekRange.max) * 100;
@@ -404,7 +424,7 @@ const Play = ({ song }) => {
   clearInterval(appState.playingInterval);
 
   if (audio) {
-    song.isPlaying = audio.paused ? true : false;
+    song.isPlaying = audio.paused ? true: false;
     appState.resolveVolume(audio, song);
     audio.paused ? audio.play() : audio.pause();
     $render(Songs, { songs: appState.setPlayingState(song) });
@@ -482,7 +502,7 @@ const Repeat = () => {
 
 const Controller = ({ song }) => {
   return `
-      <div class="player-control wrapper">
+      <div class="player-control wrapper" id="controller">
         <Repeat />
         <Previous song=${song} />
         <Play song=${song} />

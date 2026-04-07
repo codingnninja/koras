@@ -4,12 +4,15 @@
   "description": "Enjoy simple, no-build and cross-platform UI composition in browsers and servers without a virtual DOM or tagged templates.",
   "author": "Ayobami Ogundiran (ayobami_ogundiran@yahoo.com)",
   "keywords": [
-    "React alternative",
-    "React in the browser",
-    "Server Component",
-    "Client Component",
-    "JSX in the browser",
-    "Hybride component"
+    "koras",
+    "react alternative",
+    "jsx runtime",
+    "no build",
+    "server components",
+    "client components",
+    "web components",
+    "ui framework",
+    "lightweight framework"
   ],
   "license": "ISC",
   "homepage": "https://github.com/codingnninja/koras#readme",
@@ -21,9 +24,11 @@
     "url": "git+https://github.com/codingnninja/koras.git"
   },
   "module": "dist/esm/koras.js",
-  "module_min": "dist/esm/koras.min.js",
   "type": "module",
   "exports": {
+    ".": {
+      "import": "./dist/esm/koras.js"
+    },
     "./render": {
       "import": "./dist/esm/render.js"
     },

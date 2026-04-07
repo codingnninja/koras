@@ -1,52 +1,129 @@
-"use strict";
-
+//CONSTANTS & GLOBALS
 const renderIdentity = "_9s35Ufa7M67wghwT_";
+
 const STRING = "string";
 const NUMBER = "number";
 const FUNCTION = "function";
-const ZERO = 0;
-const ONE = 1;
 const BOOLEAN = "boolean";
 const SYMBOL = "symbol";
 const BIG_INT = "bigint";
-let bundle = globalThis['koras_bundle'] || '';
+
+const ZERO = 0;
+const ONE = 1;
+
 const UNDEFINED = undefined || "undefined";
 
+globalThis.ks = globalThis.ks || {};
 
+//REGEX PATTERNS
 let patterns = {
-  anyNode: /(<[^<>]+>)/,
+  // safer split
+  anyNode: /(<[^<>]+?>)/,
+
   cap: /[A-Z]/,
-  self: /<([^\s<>\/]+)([^<>]*?)\/>/,
-  close: /<\/([^\s<>]+)>/,
-  start: /<([^\s<>]+) ?([^<>]*)>/,
-  text: /<(?:\/?[A-Za-z]+\b[^>]*>|!--.*?--)>/,
-  firstLetterCapped: /<([A-Z][A-Za-z0-9]*)/,
-  isComponentCloseTag: /<\/[A-Z][A-Za-z0-9]*>/,
-  isNotTag: /^(?!<\w+\/?>$).+$/,
+
+  // self-closing tags
+  self: /<([A-Za-z][\w-]*)(\s+[^<>]*?)?\s*\/>/,
+
+  // closing tags
+  close: /<\/([A-Za-z][\w-]*)>/,
+
+  // opening tags
+  start: /<([A-Za-z][\w-]*)(\s+[^<>]*?)?>/,
+
+  // tags + comments
+  tagOrComment: /<!--[\s\S]*?-->|<\/?[A-Za-z][\w-]*\b[^>]*>/,
+
+  // component detection
+  firstLetterCapped: /<([A-Z][A-Za-z0-9]*)\b/,
+
+  isComponentCloseTag: /<\/([A-Z][A-Za-z0-9]*)>/,
 };
 
-globalThis.koras_state = globalThis.koras_state || {};
+// let patterns = {
+//   anyNode: /(<[^<>]+>)/,
+//   cap: /[A-Z]/,
+//   self: /<([^\s<>\/]+)([^<>]*?)\/>/,
+//   close: /<\/([A-Za-z][\w-]*)>/,//<\/([^\s<>]+)>/,
+//   start: /<([A-Za-z][\w-]*)(\s+[^<>]*?)?>/, //<([^\s<>]+) ?([^<>]*)>/,
+//   text: /<(?:\/?[A-Za-z]+\b[^>]*>|!--.*?--)>/,
+//   firstLetterCapped: /<([A-Z][A-Za-z0-9]*)\b/,//<([A-Z][A-Za-z0-9]*)/,
+//   isComponentCloseTag: /<\/[A-Z][A-Za-z0-9]*>/,
+//   isNotTag: /^(?!<\w+\/?>$).+$/,
+// };
 
+//ENVIRONMENT HELPERS
+function isBrowserDOM() {
+  return typeof window === "object" && typeof document === "object";
+}
+
+function isObject(obj){
+  return Object.prototype.toString.call(obj) === '[object Object]';
+}
+
+const isPromise = value => value?.then instanceof Function;
+
+//STATE MANAGEMENT
 function __$setState(props) {
-  const key = `koras_${Math.random().toString(36).substring(2)}`;
-  globalThis.koras_state[key] = props;
+  const key = `${Math.random().toString(36).substring(6)}`;
+  globalThis.ks[key] = props;
   return key;
 }
 
 function getState(key) {
-  const props = window.koras_state[key];
+  const props = globalThis.ks[key];
   return props ? props : key;
 }
 
+//STRING/HTML NORMALIZATION & SANITIZATION & SECURITY
 function removeWhiteSpaceInOpeningTag(code) {
-  return code.replace(/<(\w+)\s+>/g, '<$1>')
+  return code.replace(/<(\w+)([^>]*)>/g, (match, tagName, attrs) => {
+    // This regex matches sequences of whitespace outside quotes
+    const whitespaces = '/(\s+)(?=(?:[^"]*"[^"]*")*[^"]*$)/g';
+    const cleanedAttrs = attrs.replace(whitespaces, ' ').trim();
+    return cleanedAttrs ? `<${tagName} ${cleanedAttrs}>` 
+                        : `<${tagName}>`;
+  });
 }
 
 function removeJsComments(code) {
   return code.replace(/\/\/.*|\/\*[\s\S]*?\*\//g, " ");
 }
 
+function unescapeQuotes(props) {
+  props = props.replace(/\\'/g, "'").replace(/\\"/g, '"');
+  return props;
+}
+
+function escapeString(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\') // backslash
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"') // double quote
+    .replace(/\"/g, '\\"') // escaped double quote
+    .replace(/[\x00-\x1F]/g, (ch) => {
+      switch (ch) {
+        case '\b':
+          return '\\b';
+        case '\f':
+          return '\\f';
+        case '\n':
+          return '\\n';
+        case '\r':
+          return '\\r';
+        case '\t':
+          return '\\t';
+        default:
+          return '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+      }
+    });
+}
 function sanitizeString(str) {
+  
+  if(typeof str !== STRING){
+    return str;
+  }
+
   return str
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -71,7 +148,6 @@ function deSanitizeString(str) {
   return props;
 }
 
-
 /**
  * remove script tag
  * @param str
@@ -86,7 +162,7 @@ function removeScript(str) {
  * @param str
  * @returns {string | * | void}
  */
-function correctBracket(str) {
+function fixBracketConflicts(str) {
   return str.replace(/("[^<>\/"]*)<([^<>\/"]+)>([^<>\/"]*")/g, '"$1|$2|$3"');
 }
 
@@ -96,7 +172,7 @@ function correctBracket(str) {
  * @returns {string | * | void}
  */
 
-function removeComment(str) {
+function removeHtmlComment(str) {
   return str.replace(/<!--[^>]*-->/g, "");
 }
 
@@ -105,6 +181,7 @@ function removeComment(str) {
  * @param str
  * @returns {string | * | void}
  */
+
 function removeBreakLine(str) {
   let result = '';
   let inFunction = false;
@@ -156,62 +233,52 @@ function getBodyIfHave(str) {
 }
 
 /**
- * Tag regex matchers
+ * Normalize html tags
  * @param str
- * @returns {Boolean}
+ * @returns {string | * | void}
  */
-function isLine(property, line) {
-  return patterns[property].test(line);
+
+function preventXss(str) {
+  const steps = [
+    removeJsComments,
+    removeWhiteSpaceInOpeningTag,
+    removeScript,
+    removeHtmlComment,
+    removeBreakLine,
+    getBodyIfHave,
+    fixBracketConflicts
+  ];
+
+  return steps.reduce((v, fn) => fn(v), str);
 }
 
-
-/**
- * check for component
- * @param str
- * @returns boolean
- */
-function isComponent(line) {
-  return isLine("firstLetterCapped", line);
-}
-
-function tryCatchSmart(label, fn, ...args) {
+//LOGGING & ERROR HANDLING
+async function tryCatchSmart(label, fn, ...args) {
   try {
-    const result = fn(...args);
-    if (result instanceof Promise) {
-      return result.catch(error => logError(label, error, args));
-    }
-    return result;
-  } catch (error) {
-    logError(label, error, args);
+    return await fn(...args);
+  } catch (err) {
+    logError(label, err, args);
   }
 }
-
 function logError(label, error, inputValue) {
   const stackLines = (error.stack || '').split('\n');
   const locationLine = stackLines.find(line =>
     line.includes('at ') && !line.includes('tryCatch')
   );
 
-  console.error(`🚨 [Error in "${label}"]`);
+  console.error(`• [Error in "${label}"]`);
   console.error(`• Message: ${error.message}`);
   if (locationLine) console.error(`• Location: ${locationLine.trim()}`);
   console.error('• Input Value:', inputValue);
   console.error('• Full Stack Trace:\n', error.stack);
 }
 
-/**
- * Normalize html tags
- * @param str
- * @returns {string | * | void}
- */
-function normalizeHTML(str) {
-  return correctBracket(
-    getBodyIfHave(removeBreakLine(removeComment(removeScript(removeWhiteSpaceInOpeningTag(str)))))
-  );
-}
-
 function callRenderErrorLogger(error) {
-  if (!globalThis["RenderErrorLogger"]) return false;
+
+  if (!globalThis["RenderErrorLogger"]) {
+    return false;
+  }
+
   const component = globalThis["RenderErrorLogger"];
   $render(component, {
     error
@@ -219,28 +286,18 @@ function callRenderErrorLogger(error) {
 }
 
 function callRenderDomPurifier(html) {
-  if (!globalThis["RenderDomPurifier"]) return html;
+
+  if (!globalThis["RenderDomPurifier"]) {
+    return html;
+  }
+
   const component = globalThis["RenderDomPurifier"];
   $render(component, {
     html
   });
 }
 
-function spreadKorasProps(props) {
-  let result = "";
-  const entries = Object.entries(props);
-  let depth = ZERO;
-  while (depth < entries.length) {
-    const [key, value] = entries[depth];
-    result += `${key}=${stringify(value)}`;
-    if (depth !== entries.length - ONE) {
-      result += " ";
-    }
-    depth++;
-  }
-  return result;
-}
-
+//TYPE / VALUE UTILITIES
 function normalizeNumberOrBoolean(paramValue) {
   if (/^\d+$/.test(paramValue)) {
     return Number(paramValue);
@@ -251,6 +308,232 @@ function normalizeNumberOrBoolean(paramValue) {
   return paramValue;
 }
 
+const getType = (value) => {
+  return Object.prototype.toString.call(value).slice(8, -1);
+};
+
+const allowedData = {
+  Array: "Array",
+  Function: "Function",
+  Object: "Object"
+};
+
+function isAllowed(data) {
+  if (banList(data)) {
+    throw new Error("Data type not allowed. Wrap it in a function instead");
+  }
+  return allowedData[getType(data)] ? true : false;
+}
+
+function banList(value) {
+  let banned = false;
+  if (value instanceof Date) {
+    banned = true;
+  } else if (value instanceof Map) {
+    banned = true;
+  } else if (value instanceof Set) {
+    banned = true;
+  } else if (value instanceof WeakMap) {
+    banned = true;
+  } else if (value instanceof WeakSet) {
+    banned = true;
+  } else if (typeof value === SYMBOL) {
+    banned = true;
+  } else if (value instanceof RegExp) {
+    banned = true;
+  } else if (typeof value === BIG_INT) {
+    banned = true;
+  }
+  return banned;
+}
+
+//STRINGIFY & PURIFY CORE
+
+function jsonStringify(data) {
+  if (banList(data)) {
+    throw new Error(`${getType(
+      data
+    )} is not allowed as a prop. Wrap it in a function instead.`);
+  }
+  const quotes = '"';
+
+  if (isCyclic(data)) {
+    throw new TypeError("props={props} or props=${props} is not allowed. Use {...props} instead");
+  }
+
+  if (typeof data === BIG_INT) {
+    throw new TypeError(
+      "BigInt is not expected to be used as a prop. Wrap it in a function instead."
+    );
+  }
+
+  if (data === null) {
+    return "null";
+  }
+
+  const type = typeof data;
+
+  if (type === NUMBER) {
+    if (Number.isNaN(data) || !Number.isFinite(data)) {
+      return "null";
+    }
+    return String(data);
+  }
+
+  if (type === BOOLEAN) return String(data);
+
+  if (type === FUNCTION) {
+    const sanitizedString = encodeNewlinesExact(preventXss(data.toString()));
+    return `__function__:${sanitizedString}`;
+  }
+
+  if (type === UNDEFINED) {
+    return undefined;
+  }
+
+  if (type === STRING) {
+    return quotes + escapeString(data) + quotes;
+  }
+
+  if (typeof data.toJSON === FUNCTION) {
+    return jsonStringify(data.toJSON());
+  }
+
+  if (Array.isArray(data)) {
+    let result = "[";
+    let first = true;
+    for (let index = ZERO; index < data.length; index++) {
+      if (!first) {
+        result += ",";
+      }
+      result += jsonStringify(data[index]);
+      first = false;
+    }
+    result += "]";
+    return result;
+  }
+
+  let result = "{";
+  let first = true;
+  const entries = Object.entries(data);
+  let index = ZERO;
+  while (index < entries.length) {
+    let [key, value] = entries[index];
+    banList(value);
+    if (typeof value === FUNCTION) {
+      const sanitizedString = encodeNewlinesExact(preventXss(value.toString()));
+      value = `__function__:${sanitizedString}`;
+    }
+
+    if (
+      typeof key !== SYMBOL &&
+      value !== UNDEFINED &&
+      typeof value !== FUNCTION &&
+      typeof value !== SYMBOL
+    ) {
+      if (!first) {
+        result += ",";
+      }
+      result += quotes + key + quotes + ":" + jsonStringify(value);
+      first = false;
+    }
+    index++;
+  }
+  result += "}";
+  return result;
+}
+
+function stringify(...args) {
+
+  if(args.length > 2) {
+    throw('An argument is expect. If you want more more, pass an object')
+  }
+
+  const prop = args[ZERO];
+  const component = args[ONE];
+
+  try {
+    if (
+      typeof prop === STRING &&
+      prop.includes("NaN") |
+      prop.includes("[object Object]") |
+      prop.includes(UNDEFINED)
+    ) {
+      return "null";
+    }
+
+    if(prop && typeof prop === STRING || typeof prop === NUMBER){
+      return `${renderIdentity}${sanitizeString(String(prop))}${renderIdentity}`;
+    }
+    
+    if (!isAllowed(prop)) {
+      return sanitizeString(String(prop));
+    }
+
+    const stringifyProp = jsonStringify(prop);
+    return `${renderIdentity}${sanitizeString(stringifyProp)}${renderIdentity}`;
+
+  } catch (error) {
+    callRenderErrorLogger({
+      error,
+      component
+    });
+    console.error(`${error} in ${component}`);
+  }
+}
+
+function isInvalidProps(props){
+  if(props === "{}") return true;
+  if(props === "[]") return true;
+  if (typeof props !== STRING) return true;
+  return false;
+}
+
+function $purify(props, component) {
+  if(isInvalidProps(props)){
+    return props;
+  }
+  
+  try {
+    if (props.startsWith(renderIdentity)) {
+      props = deSanitizeString(props.slice(18, -18));
+      if(props.startsWith("__function__:")){
+        return preprocessFunction(props);
+      }
+    }
+    if (!props.includes('"', ZERO)) {
+      props = '"' + props + '"';
+    }
+
+    if (props.includes(renderIdentity)) {
+      return ("You're not allowed to use reserved ID (_9s35Ufa7M67wghwT_) in data");
+    }
+
+    return normalizeNumberOrBoolean(JSON.parse(unescapeQuotes(props)));
+  } catch (error) {
+    callRenderErrorLogger({
+      error,
+      component
+    });
+    console.error(`${error} in ${component}`);
+  }
+}
+
+const isCyclic = (input) => {
+  const seen = new Set();
+
+  const dfsHelper = (obj) => {
+    if (typeof obj !== "object" || obj === null) return false;
+    seen.add(obj);
+    return Object.values(obj).some(
+      (value) => seen.has(value) || dfsHelper(value)
+    );
+  };
+
+  return dfsHelper(input);
+};
+
+//PROPS PARSING SYSTEM
 function quoteAttributes(str) {
   const regex = /(\w+)=([^=\s]+)(?=\s+\w+=|$)/g;
   return str.replace(regex, (match, key, value) => {
@@ -266,7 +549,7 @@ function quoteAttributes(str) {
       return `${key}="${trimmed}"`;
     }
 
-    // quote numbers and text (your original behavior)
+    // quote numbers and text
     return `${key}="${trimmed}"`;
   });
 }
@@ -275,50 +558,32 @@ function extractStaticAttributes(input, component) {
   input = quoteAttributes(input.replace(/^\/\s*|\s*\/$/g, ''));
 
   const pairs = [];
-  let attrName = "";
-  let attrValue = "";
+  let key = '';
+  let value = '';
+  let mode = 'key';
+  let depth = 0;
   let inQuotes = false;
-  let inObject = 0;
-  let capturingValue = false;
 
-  for (let index = ZERO; index < input.length; index++) {
-    const char = input[index];
+  for (const char of input) {
+    if (mode === 'value') {
+      if (char === '"' || char === "'") inQuotes = !inQuotes;
+      else if (char === '{') depth++;
+      else if (char === '}') depth--;
 
-    if (capturingValue) {
-      if (char === '"' || char === "'") {
-        inQuotes = !inQuotes;
-        attrValue += char;
-      } else if (char === "{") {
-        if (inObject !== ZERO) {
-          attrValue += char;
-        }
-        inObject++;
-      } else if (char === "}") {
-        inObject--;
-        if (inObject !== ZERO) {
-          attrValue += char;
-        }
-      } else if (inObject > 0 && (char === "{" || char === "[")) {
-        throw new TypeError(`props like attr={{a:"render"}} are not allowed; instead, use variables as values of props like attr=\${variableName} in ${component} and its parent component`);
-      } else if ((!inQuotes && char === " ") || index === input.length - ONE) {
-        if (index === input.length - ONE && char !== " ") {
-          attrValue += char;
-        }
-        pairs.push(`${attrName}=${attrValue}`);
-        attrName = "";
-        attrValue = "";
-        capturingValue = false;
+      if (!inQuotes && depth === 0 && char === ' ') {
+        pairs.push(`${key}=${value}`);
+        key = value = '';
+        mode = 'key';
       } else {
-        attrValue += char;
+        value += char;
       }
     } else {
-      if (char === "=") {
-        capturingValue = true;
-      } else if (char !== " ") {
-        attrName += char;
-      }
+      if (char === '=') mode = 'value';
+      else if (char !== ' ') key += char;
     }
   }
+
+  if (key && value) pairs.push(`${key}=${value}`);
   return pairs;
 }
 
@@ -358,10 +623,115 @@ function parseProps(spreadedProps, component) {
   return parsedProps;
 }
 
+function parsePropsManually(str, string = false) {
+  str = convertInnerDoubleQuoteToSingleQuoute(str);
+
+  //convert all single quotes to double quotes
+  str = str.replace(/=(['"])(.*?)\1/g, '="$2"');
+  let props = {};
+  let key = '',
+    value = '',
+    readingKey = true,
+    readingValue = false;
+  let inQuotes = false;
+
+  for (let i = 0; i < str.length; i++) {
+    let char = str[i];
+
+    if (readingKey) {
+      if (char === '=') {
+        readingKey = false;
+        readingValue = true;
+        continue;
+      }
+      // if (/\s/.test(char)) continue;
+      key += char;
+    } else if (readingValue) {
+      if (char === '"') {
+        if (inQuotes) {
+          props[key] = string ? transformValue(value) : $purify(value);
+          key = value = '';
+          readingKey = true;
+          readingValue = false;
+          inQuotes = false;
+        } else {
+          inQuotes = true;
+        }
+        continue;
+      }
+      if (inQuotes) value += char;
+    }
+  }
+
+  const resolvedProps = string ? convertToAttr(props) : props;
+  return resolvedProps;
+}
+
+function resolveAttributes(propsString, str = false) {
+  let props = {};
+  let output = handleSpreadProps(propsString);
+  propsString = output.attribute;
+
+  const standAloneExpr = extractStandaloneExpressionsAsString(output.attribute);
+  propsString = removeUnaryExpressionsFromAttribute(propsString.trim(), standAloneExpr)
+
+  props = parsePropsManually(
+    deSanitizeString(
+      propsString.trim()
+    ), str)
+
+  if (typeof props === STRING) {
+    return props += output.spreadPropsString + " " + standAloneExpr.join(" ");
+  }
+  props.extra = output.spreadPropsString + " " + standAloneExpr.join(" ");
+  return props;
+}
+
+
+function spreadKorasProps(props) {
+  let result = "";
+  const entries = Object.entries(props);
+  let depth = ZERO;
+  while (depth < entries.length) {
+    const [key, value] = entries[depth];
+    result += `${key}=${stringify(value)}`;
+    if (depth !== entries.length - ONE) {
+      result += " ";
+    }
+    depth++;
+  }
+  return result;
+}
+
+function encodeNewlinesExact(str) {
+  return str.replace(/\r\n|\n|\r/g, m => {
+    if (m === '\r\n') {
+      return '\uE000';
+    }
+    if (m === '\n') {
+     return '\uE001';
+    }
+      
+    return '\uE002';
+  });
+}
+
+function decodeNewlinesExact(str) {
+  return str.replace(/[\uE000-\uE002]/g, m => {
+    if (m === '\uE000') {
+      return '\r\n';
+    }
+    if (m === '\uE001') {
+      return '\n';
+    }
+    return '\r';
+  });
+}
+
 function preprocessFunction(prop) {
   if (!prop.startsWith("__function__:")) return prop;
   prop = normailzeQuotesInFunctionString(prop);
-  const normalizedString = normalizeHTML(removeComment(prop.slice(13)));
+  const normalizedString = decodeNewlinesExact(preventXss(prop.slice(13)));
   return new Function(`return ${normalizedString}`)();
 }
 
@@ -382,152 +752,6 @@ async function checkForJsQuirks(input, component) {
     callRenderErrorLogger(errorMsg);
   }
   return input;
-}
-
-function isPromise(value) {
-  return Boolean(value && typeof value.then === FUNCTION);
-}
-
-/**
- * Combine tokens into an html string
- * @param str
- * @returns {string | * | void}
- */
-
-function convertStackOfHTMLToString(stack) {
-  let html = ``;
-  if (stack.length > ZERO) {
-    let index = 0; //depth
-    while (index < stack.length) {
-      const node = stack[index];
-      const trimmedNode = node.trim();
-
-      if (trimmedNode === ",") {
-        html += "";
-      } else {
-        html += trimmedNode;
-      }
-      index++;
-    }
-  }
-  return html;
-}
-
-/**
- * parses html and jsx
- * @param str
- * @returns {*}
- */
-async function parseComponent(str) {
-  if (!str) {
-    return null;
-  }
-  try {
-    let extensibleStr = str.split(patterns.anyNode);
-    const stack = [];
-    let depth = 0;
-    while (extensibleStr.length > depth) {
-      let currentElement = extensibleStr[depth].trim();
-      if (currentElement === "") {
-        depth++;
-        continue;
-      }
-      if (isComponent(currentElement)) {
-        extensibleStr = await parseChildrenComponents(
-          extensibleStr,
-          currentElement,
-          depth
-        );
-      } else {
-        currentElement = currentElement.replace(/_9s35Ufa7M67wghwT_/g, "");
-        stack.push(deSanitizeOpeningTagAttributes(currentElement));
-        depth++;
-      }
-    }
-    return convertStackOfHTMLToString(stack);
-  } catch (error) {
-    callRenderErrorLogger(error);
-    console.error(error);
-  }
-}
-
-function getChildrenOfTag(tokens, targetIndex) {
-  const openTag = tokens[targetIndex];
-  const openTagMatch = openTag.match(/^<([a-zA-Z0-9\-]+)\b/);
-  if (!openTagMatch) throw new Error("Invalid opening tag at target index");
-
-  const tagName = openTagMatch[1];
-  const closeTag = `</${tagName}>`;
-
-  const children = [];
-  let depth = 0;
-  let i = targetIndex + 1;
-
-  while (i < tokens.length) {
-    const token = tokens[i];
-
-    if (typeof token === "string") {
-      const isSameOpen = token.startsWith(`<${tagName}`) && !token.startsWith(`</`);
-      const isSameClose = token === closeTag;
-
-      if (isSameOpen) {
-        depth++;
-        children.push(token);
-        i++;
-        continue;
-      }
-
-      if (isSameClose) {
-        if (depth === 0) {
-          break; // we've reached the outermost closing tag
-        } else {
-          depth--;
-          children.push(token);
-          i++;
-          continue;
-        }
-      }
-    }
-
-    // push normal token (text or other tags)
-    children.push(token);
-    i++;
-  }
-
-  if (i >= tokens.length || tokens[i] !== closeTag) {
-    throw new Error(`Missing closing tag for <${tagName}>`);
-  }
-
-  // Construct updated tokens array (keep opening tag, remove children + closing tag)
-  const newTokens = [
-    ...tokens.slice(0, targetIndex + 1),
-    ...tokens.slice(i + 1)
-  ];
-
-  return {
-    tokens: newTokens,
-    children: children.join(" ")
-  };
-}
-
-function handleAttributes(propsString, str = false) {
-  let props = {};
-  let output = handleSpreadProps(propsString);
-  propsString = output.attribute;
-
-  const standAloneExpr = extractStandaloneExpressionsAsString(output.attribute);
-  propsString = removeStandAloneExpressionsFromAttribute(propsString.trim(), standAloneExpr)
-
-  props = parsePropsManually(
-    deSanitizeString(
-      propsString.trim()
-    ), str)
-
-  if (typeof props === STRING) {
-    return props += output.spreadPropsString + " " + standAloneExpr.join(" ");
-  }
-  props.extra = output.spreadPropsString + " " + standAloneExpr.join(" ");
-  return props;
 }
 
 function extractStandaloneExpressionsAsString(input) {
@@ -599,11 +823,15 @@ function handleSpreadProps(attribute) {
   };
 }
 
-function removeStandAloneExpressionsFromAttribute(attribute, targets) {
+function removeUnaryExpressionsFromAttribute(attribute, targets) {
   for (let i = 0; i < targets.length; i++) {
-    const standAloneExpressions = targets[i].startsWith("$") ? targets[i] : `\$${targets[i]}}`
-    attribute = attribute.replace(standAloneExpressions, ''); // ${} version
-    attribute = attribute.replace(standAloneExpressions.slice(1), ''); // {} version
+
+    const unaryExpressions = targets[i].startsWith("$") 
+                           ? targets[i] 
+                           : `\$${targets[i]}}`
+
+    attribute = attribute.replace(unaryExpressions, '') // ${} version
+                         .replace(unaryExpressions.slice(1), ''); // {} version
   }
   return attribute;
 }
@@ -638,7 +866,6 @@ function transformValue(value) {
     value.includes("(") &&
     value.includes(")") &&
     value.includes("${")) {
-    // console.log(value)
     value = [...transformFunctionCallArgs(tokenize(value))]
     return value.join("");
   }
@@ -655,152 +882,139 @@ function transformValue(value) {
   return value;
 }
 
-function convertDoubleQuoteToSingleQuoute(str) {
+function convertInnerDoubleQuoteToSingleQuoute(str) {
   return str.replace(/\$\{([^}]*)\}/g, (match, content) => {
     const updated = content.replace(/"([^"]*)"/g, "'$1'");
     return '${' + updated + '}';
   });
 }
 
-function parsePropsManually(str, string = false) {
-  str = convertDoubleQuoteToSingleQuoute(str);
-
-  //convert all single quotes to double quotes
-  str = str.replace(/=(['"])(.*?)\1/g, '="$2"');
-  let props = {};
-  let key = '',
-    value = '',
-    readingKey = true,
-    readingValue = false;
-  let inQuotes = false;
-
-  for (let i = 0; i < str.length; i++) {
-    let char = str[i];
-
-    if (readingKey) {
-      if (char === '=') {
-        readingKey = false;
-        readingValue = true;
-        continue;
-      }
-      // if (/\s/.test(char)) continue;
-      key += char;
-    } else if (readingValue) {
-      if (char === '"') {
-        if (inQuotes) {
-          props[key] = string ? transformValue(value) : $purify(value);
-          key = value = '';
-          readingKey = true;
-          readingValue = false;
-          inQuotes = false;
-        } else {
-          inQuotes = true;
-        }
-        continue;
-      }
-      if (inQuotes) value += char;
-    }
-  }
-
-  const resolvedProps = string ? convertToAttr(props) : props;
-  return resolvedProps;
-}
-async function parseChildrenComponents(extensibleStr, currentElement, depth) {
-
-  const line = currentElement;
-  const regularMatch = line.match(patterns.start);
-  const selfClosingMatch = line.match(patterns.self);
-  const node = regularMatch ? regularMatch : selfClosingMatch;
-  let extraction = selfClosingMatch ? "" : getChildrenOfTag(extensibleStr, depth);
-
-  const dependencies = {
-    tagName: node[ONE],
-    props: parseProps(deSanitizeString(node[2]), node[ONE]),
-    children: extraction.children
-  };
-
-  try {
-    let calledComponent = await callComponent(dependencies);
-    const component = normalizeHTML(
-      sanitizeOpeningTagAttributes(calledComponent)
-    );
-
-    extensibleStr = extraction ? extraction.tokens : extensibleStr;
-    const indexOfCurrentElement = extensibleStr.indexOf(currentElement);
-    const result = component.split(patterns.anyNode);
-
-    if (indexOfCurrentElement !== -1) {
-      extensibleStr.splice(indexOfCurrentElement, ONE, ...result);
-    }
-    return extensibleStr;
-  } catch (error) {
-    const component = node[ONE];
-    callRenderErrorLogger({
-      error,
-      component
-    });
-    console.error(`${error} in ${component}: ${globalThis[component]}`);
-  }
-}
-
-export function extractBalancedBrackets(tokens, startIndex, open = '{', close = '}', errors = []) {
-  let depth = 1;
-  const result = [open];
-  let i = startIndex;
-
-  while (i < tokens.length) {
-    const token = tokens[i];
-    result.push(token);
-
-    if (token === open) {
-      depth++;
-    } else if (token === close) {
-      depth--;
-    }
-
-    i++;
-    if (depth === 0) {
-      break;
-    }
-  }
-
-  if (depth !== 0) {
-    errors.push({
-      type: 'UnmatchedBracket',
-      token: open,
-      at: startIndex
-    });
-    return [
-      [], i
-    ];
-  }
-
-  result.shift() //remove the open brace { used to track braces recursively
-  return [result, i];
-}
-
-export function extractInterpolation(tokens, index, errors = []) {
-  if (!tokens[index]) {
-    return null;
-  }
-
-  const hasDollar = tokens[index] === '$';
-  if (hasDollar) {
-    index++;
-  }
-
-  if (tokens[index] !== '{') {
-    return null;
-  }
-
-  const [content, end] = extractBalancedBrackets(tokens, index + 1, '{', '}', errors);
-  return [content.slice(0, -1), end, hasDollar];
-}
-
 export function isValidIdentifier(token) {
   return /^[a-zA-Z_$][\w$]*$/.test(token);
 }
 
+function* wrapWithEncoder(innerTokens, encoder = 'stringify') {
+  yield encoder;
+  yield '(';
+  for (const token of innerTokens) yield token;
+  yield ')';
+}
+
+function buildStateSetter(props) {
+  const sanitizedProps = sanitizeString([...transformInterpolations(props)].join(""));
+  return sanitizedProps ? ", '${__$setState(" + sanitizedProps + ")}'" : '';
+}
+
+function disallowClosureToFunctionCall(input) {
+  let filteredInput = input.filter(str => str.trim() !== "")
+  const dollar = filteredInput[0];
+  const openCurlyBrace = filteredInput[1];
+  const openBrace = filteredInput[2];
+
+  const initialCharOfClosure = dollar + openCurlyBrace + openBrace;
+  //heuristic to know we are dealing with a closure.
+  if (initialCharOfClosure === "${(") {
+    throw ("Please, pass the function like ${ play() } instead of ${ () => play() }")
+  }
+  return filteredInput;
+}
+
+function isInitialLetterUppercase(func, context) {
+
+  if (typeof func !== FUNCTION) {
+    throw `Use ${context}(functionName, arg) instead of ${context}(funcationName(arg)) or the first argument you provided is not a function.`;
+  }
+  const initialLetter = func.name.charAt(ZERO);
+  return initialLetter === initialLetter.toUpperCase();
+}
+
+function executeSignal(signal){
+  if(typeof signal.action !== FUNCTION){
+    return false;
+  }
+  signal.action(signal.props);
+}
+
+function getNextVersion(id) {
+  globalThis["renderMap"] = globalThis["renderMap"] || {};
+  const v = (renderMap[id] + 1) || 1;
+  renderMap[id] = v;
+  return v;
+}
+
+function sanitizeOpeningTagAttributes(tag) {
+  const regex = /(\w+)=("[^"]*"|'[^']*')/g;
+  return tag.replace(regex, (match, attributeName, attributeValue) => {
+      const sanitizedValue = attributeValue
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;"); //make this to not affect arrow function's '=>' and if it works sanitizeString should be enough
+      return `${attributeName}=${sanitizedValue}`;
+    });
+}
+
+function deSanitizeOpeningTagAttributes(tag) {
+  const regex = /(\w+)=("[^"]*"|'[^']*')/g;
+  return preventXss(
+    tag.replace(regex, (match, attributeName, attributeValue) => {
+      const sanitizedValue = attributeValue
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+      return `${attributeName}=${sanitizedValue}`;
+    })
+  );
+}
+
+function addStaleAttribute(html) {
+  const len = html.length;
+  let i = 0;
+
+  while (i < len) {
+    if (html[i] === '<') {
+      let j = i + 1;
+
+      // Skip non-opening tags
+      if (j < len && (html[j] === '/' || html[j] === '!' || html[j] === '?')) {
+        i++;
+        continue;
+      }
+
+      // Move past tag name
+      while (j < len && /[^\s/>]/.test(html[j])) {
+        j++;
+      }
+
+      // Inject immediately after tag name
+      return (
+        html.slice(0, j) +
+        ' __stale' +
+        html.slice(j)
+      );
+    }
+
+    i++;
+  }
+
+  return html;
+}
+
+function isStale(targetId, version) {
+  return renderMap[targetId] !== version;
+}
+
+function normailzeQuotesInFunctionString(funcStr) {
+  return funcStr
+    .replace(/"(\w+)"\s*:/g, "'$1':")
+    .replace(/:\s*"([^"]*)"/g, ": `$1`")
+    .replace(/"/g, "`");
+}
+
+function formatKeyValuePairs(input) {
+  return input.replace(/(\w+)=\$?{(.*?)}/g, (match, key, value) => {
+    return key + '="${' + value + '}"';
+  });
+}
+
+//TOKENIZER & TRANSFORM ENGINE
 export function* tokenize(input) {
   let i = 0;
 
@@ -880,49 +1094,58 @@ export function* tokenize(input) {
   }
 }
 
-function* wrapWithEncoder(innerTokens, encoder = 'stringify') {
-  yield encoder;
-  yield '(';
-  for (const token of innerTokens) yield token;
-  yield ')';
-}
+export function extractBalancedBrackets(tokens, startIndex, open = '{', close = '}', errors = []) {
+  let depth = 1;
+  const result = [open];
+  let i = startIndex;
 
-function buildStateSetter(props) {
-  const sanitizedProps = sanitizeString([...transformInterpolations(props)].join(""));
-  return sanitizedProps ? ", '${__$setState(" + sanitizedProps + ")}'" : '';
-}
+  while (i < tokens.length) {
+    const token = tokens[i];
+    result.push(token);
 
-export function transformRenderArgs(tokens, errors = []) {
-  const input = Array.from(tokens);
-  input.shift(); //remove "//"
-  let filteredInput = input.filter(str => str.trim() !== "")
-  
-  const dollar = filteredInput[0];
-  const render = filteredInput[1];
-  const openBrace = filteredInput[2];
-  const component = filteredInput[3];
-  let value;
-  const reformedRenderPart = dollar + render + openBrace + component; //forms $render(Component
+    if (token === open) {
+      depth++;
+    } else if (token === close) {
+      depth--;
+    }
 
-  //reform $render component is passed as js expression ($render(${component}, ${props}?))
-  if (component === dollar) {
-    let props = filteredInput.slice(9, filteredInput.length - 1);
-    props = props.length === 2 ? props.unshift("{"): props;
-    const reformedRenderPart = "$render(${" + filteredInput[5] + "}";
-    let fullRender = reformedRenderPart + buildStateSetter(props) + ")";
-    fullRender = filteredInput[10] ? fullRender : reformedRenderPart + ")";
-    return fullRender;
+    i++;
+    if (depth === 0) {
+      break;
+    }
   }
 
-  if (input.length > 5) {
-    let props = filteredInput.slice(6, filteredInput.length - 1);
-    props = props.length === 2 ? props.unshift("{") : props;
-    value = filteredInput.length === 9 ? filteredInput[6] : filteredInput[7];
-    const otherPart = reformedRenderPart + buildStateSetter(props) + ")";
-    return otherPart; //forms $render(Component, '${setState(springify(props)}'))
+  if (depth !== 0) {
+    errors.push({
+      type: 'UnmatchedBracket',
+      token: open,
+      at: startIndex
+    });
+    return [
+      [], i
+    ];
   }
 
-  return reformedRenderPart + ")"; //forms $render(Component)
+  result.shift() //remove the open brace { used to track braces recursively
+  return [result, i];
+}
+
+export function extractInterpolation(tokens, index, errors = []) {
+  if (!tokens[index]) {
+    return null;
+  }
+
+  const hasDollar = tokens[index] === '$';
+  if (hasDollar) {
+    index++;
+  }
+
+  if (tokens[index] !== '{') {
+    return null;
+  }
+
+  const [content, end] = extractBalancedBrackets(tokens, index + 1, '{', '}', errors);
+  return [content.slice(0, -1), end, hasDollar];
 }
 
 export function* transformInterpolations(tokens, errors = []) {
@@ -947,20 +1170,6 @@ export function* transformInterpolations(tokens, errors = []) {
       yield input[i++];
     }
   }
-}
-
-function disallowClosureToFunctionCall(input) {
-  let filteredInput = input.filter(str => str.trim() !== "")
-  const dollar = filteredInput[0];
-  const openCurlyBrace = filteredInput[1];
-  const openBrace = filteredInput[2];
-
-  const initialCharOfClosure = dollar + openCurlyBrace + openBrace;
-  //heuristic to know we are dealing with a closure.
-  if (initialCharOfClosure === "${(") {
-    throw ("Please, pass the function like ${ play() } instead of ${ () => play() }")
-  }
-  return filteredInput;
 }
 
 export function* transformFunctionCallArgs(tokens, errors = []) {
@@ -999,6 +1208,254 @@ export function* transformFunctionCallArgs(tokens, errors = []) {
   }
 }
 
+export function transformRenderArgs(tokens, errors = []) {
+  const input = Array.from(tokens);
+  input.shift(); //remove "//"
+  let filteredInput = input.filter(str => str.trim() !== "")
+  
+  const dollar = filteredInput[0];
+  const render = filteredInput[1];
+  const openBrace = filteredInput[2];
+  const component = filteredInput[3];
+  let value;
+  const reformedRenderPart = dollar + render + openBrace + component; //forms $render(Component
+
+  //reform $render component is passed as js expression ($render(${component}, ${props}?))
+  if (component === dollar) {
+    let props = filteredInput.slice(9, filteredInput.length - 1);
+    props = props.length === 2 ? props.unshift("{"): props;
+    const reformedRenderPart = "$render(${" + filteredInput[5] + "}";
+    let fullRender = reformedRenderPart + buildStateSetter(props) + ")";
+    fullRender = filteredInput[10] ? fullRender : reformedRenderPart + ")";
+    return fullRender;
+  }
+
+  if (input.length > 5) {
+    let props = filteredInput.slice(6, filteredInput.length - 1);
+    props = props.length === 2 ? props.unshift("{") : props;
+    value = filteredInput.length === 9 ? filteredInput[6] : filteredInput[7];
+    const otherPart = reformedRenderPart + buildStateSetter(props) + ")";
+    return otherPart; //forms $render(Component, '${setState(springify(props)}'))
+  }
+
+  return reformedRenderPart + ")"; //forms $render(Component)
+}
+
+//JSX / TEMPLATE PARSER
+/**
+ * process JSX from html
+ * @param str
+ * @constructor
+ */
+async function compileTemplate(str) {
+  try {
+    let _str = sanitizeOpeningTagAttributes(str) || "";
+    _str = preventXss(_str);
+    const parsedComponent = await parseComponent(_str);
+    return  parsedComponent;
+  } catch (error) {
+    callRenderErrorLogger(error);
+    console.error(error);
+  }
+}
+
+/**
+ * parses html and jsx
+ * @param str
+ * @returns {*}
+ */
+async function parseComponent(str) {
+
+  if (!str) {
+    return null;
+  }
+  try {
+    let extensibleStr = str.split(patterns.anyNode);
+    const stack = [];
+    let depth = 0;
+    while (extensibleStr.length > depth) {
+      let currentElement = extensibleStr[depth].trim();
+
+      if (currentElement === "") {
+        depth++;
+        continue;
+      }
+      
+      if (isComponent(currentElement)) {
+        extensibleStr = await parseChildrenComponents(
+          extensibleStr,
+          currentElement,
+          depth
+        );
+      } else {
+        currentElement = currentElement.replace(/_9s35Ufa7M67wghwT_/g, "");
+        stack.push(deSanitizeOpeningTagAttributes(currentElement));
+        depth++;
+      }
+    }
+    return convertStackOfHTMLToString(stack);
+  } catch (error) {
+    callRenderErrorLogger(error);
+    console.error(error);
+  }
+}
+
+async function parseChildrenComponents(extensibleStr, currentElement, depth) {
+
+  const line = currentElement;
+  const regularMatch = line.match(patterns.start);
+  const selfClosingMatch = line.match(patterns.self);
+  const node = regularMatch ? regularMatch : selfClosingMatch;
+  let extraction = selfClosingMatch ? "" : getChildrenOfTag(extensibleStr, depth);
+
+  const dependencies = {
+    tagName: node[ONE],
+    props: parseProps(deSanitizeString(node[2]), node[ONE]),
+    children: extraction.children
+  };
+
+  try {
+    let [version, calledComponent] = await callComponent(dependencies); 
+    const component = preventXss(
+      sanitizeOpeningTagAttributes(calledComponent)
+    );
+
+    extensibleStr = extraction ? extraction.tokens : extensibleStr;
+    const indexOfCurrentElement = extensibleStr.indexOf(currentElement);
+    const result = component.split(patterns.anyNode);
+    const ab = await parseComponent(component);
+
+    const cd = ab == null ? ['']: ab.split(patterns.anyNode);
+    const props = dependencies.props;
+    const id = props && props.id ? props.id : 1;
+
+    if(isClient && dependencies.tagName !== 'If'){
+      await handleClientRerendering(ab, dependencies.tagName + id, version);
+      cd[ONE] = addStaleAttribute(cd[ONE]);
+    }
+    //replace component with its content and reprocess the content (backtrack)
+    if (indexOfCurrentElement !== -1) {
+      extensibleStr.splice(indexOfCurrentElement, ONE, ...cd);
+    }
+    return extensibleStr;
+  } catch (error) {
+    const component = node[ONE];
+    callRenderErrorLogger({
+      error,
+      component
+    });
+
+    console.error(`${error} in ${component}: ${globalThis[component]}`);
+    logError("$render", error, [globalThis[component], dependencies.props])
+  }
+}
+
+
+/**
+ * Combine tokens into an html string
+ * @param str
+ * @returns {string | * | void}
+ */
+
+function convertStackOfHTMLToString(stack) {
+  let html = ``;
+  if (stack.length > ZERO) {
+    let index = 0; //depth
+    while (index < stack.length) {
+      const node = stack[index];
+      const trimmedNode = node.trim();
+
+      if (trimmedNode === ",") {
+        html += "";
+      } else {
+        html += trimmedNode;
+      }
+      index++;
+    }
+  }
+  return html;
+}
+
+function getChildrenOfTag(tokens, targetIndex) {
+  const openTag = tokens[targetIndex];
+  const openTagMatch = openTag.match(/^<([a-zA-Z0-9\-]+)\b/);
+  if (!openTagMatch) throw new Error("Invalid opening tag at target index");
+
+  const tagName = openTagMatch[1];
+  const closeTag = `</${tagName}>`;
+
+  const children = [];
+  let depth = 0;
+  let i = targetIndex + 1;
+
+  while (i < tokens.length) {
+    const token = tokens[i];
+
+    if (typeof token === "string") {
+      const isSameOpen = token.startsWith(`<${tagName}`) && !token.startsWith(`</`);
+      const isSameClose = token === closeTag;
+
+      if (isSameOpen) {
+        depth++;
+        children.push(token);
+        i++;
+        continue;
+      }
+
+      if (isSameClose) {
+        if (depth === 0) {
+          break; // we've reached the outermost closing tag
+        } else {
+          depth--;
+          children.push(token);
+          i++;
+          continue;
+        }
+      }
+    }
+
+    // push normal token (text or other tags)
+    children.push(token);
+    i++;
+  }
+
+  if (i >= tokens.length || tokens[i] !== closeTag) {
+    throw new Error(`Missing closing tag for <${tagName}>`);
+  }
+
+  // Construct updated tokens array (keep opening tag, remove children + closing tag)
+  const newTokens = [
+    ...tokens.slice(0, targetIndex + 1),
+    ...tokens.slice(i + 1)
+  ];
+
+  return {
+    tokens: newTokens,
+    children: children.join(" ")
+  };
+}
+
+
+/**
+ * Tag regex matchers
+ * @param str
+ * @returns {Boolean}
+ */
+function isLine(property, line) {
+  return patterns[property].test(line);
+}
+
+/**
+ * check for component
+ * @param str
+ * @returns boolean
+ */
+function isComponent(line) {
+  return isLine("firstLetterCapped", line);
+}
+
+//COMPONENT EXECUTION ENGINE
+
 /**
  * Call a component with or without props
  * @param str
@@ -1009,8 +1466,14 @@ async function callComponent(element) {
     const component = globalThis[element.tagName];
     const children = element.children;
     let props = element.props;
+
+    let pr = props && props.id ? props.id : 1;
+    const id = element.tagName + pr;
+    const version = isClient && getNextVersion(id);
+
     if (Object.keys(props).length === ZERO && !element.children) {
-      return checkForJsQuirks(component(), component);
+      const a = await resolveComponentOutput(component, props);
+      return [version, a];
     } else {
 
       if (element.children) {
@@ -1019,11 +1482,8 @@ async function callComponent(element) {
         props.children = " ";
       }
 
-      const calledComponent = checkForJsQuirks(component(props), component);
-      const resolvedComponent = isPromise(calledComponent) ?
-        await calledComponent :
-        calledComponent;
-      return resolvedComponent;
+      const a = await resolveComponentOutput(component, props);
+      return [version, a];
     }
   } catch (error) {
     const componentName = element.tagName;
@@ -1041,97 +1501,19 @@ async function callComponent(element) {
   }
 }
 
-/**
- * process JSX from html
- * @param str
- * @constructor
- */
-async function processJSX(str) {
-  try {
-    let _str = sanitizeOpeningTagAttributes(str) || "";
-    _str = normalizeHTML(_str);
-    const a = await parseComponent(_str);
-    return a;
-  } catch (error) {
-    callRenderErrorLogger(error);
-    console.error(error);
-  }
-}
+async function resolveComponentOutput(component, props){
 
-/**
- * @desc Checking rendering environment
- * @param void
- * @returns boolean
- */
-
-function isBrowser(){
-  if (typeof process === "object" && typeof require === FUNCTION) {
-    return false;
+  let calledComponent;
+  if(props.length === 0){
+    calledComponent = checkForJsQuirks(component(), component);
   }
 
-  if (typeof importScripts === FUNCTION) {
-    return false;
-  }
+  calledComponent = checkForJsQuirks(component(props), component);
+  const resolvedComponent = isPromise(calledComponent) ?
+        await calledComponent :
+        calledComponent;
+      return resolvedComponent;
 
-  if (typeof globalThis === "object") {
-    return true;
-  }
-};
-
-function isInitialLetterUppercase(func, context) {
-
-  if (typeof func !== FUNCTION) {
-    throw `Use ${context}(functionName, arg) instead of ${context}(funcationName(arg)) or the first argument you provided is not a function.`;
-  }
-  const initialLetter = func.name.charAt(ZERO);
-  return initialLetter === initialLetter.toUpperCase();
-}
-
-function executeSignal(signal){
-  if(typeof signal.action !== FUNCTION){
-    console.error("Signal: 'action' must be a function.");
-    return false;
-  }
-  signal.action(signal.props);
-}
-/**
- * @desc renders component
- * @param component string
- * @returns string || void (mutates the DOM)
- */
-
-async function $render(component, props) {
-  const result = await tryCatchSmart("$render", __$render, component, props);
-  return result;
-}
-
-async function __$render(component, props){
-  const updatedComponent = globalThis[component.name];
-  let renderedApp;
-
-  if (!isInitialLetterUppercase(component, "$render")) {
-    throw new Error("A component must start with a capital letter");
-  }
-
-  if(!isBrowser()){
-    const resolvedComponent = await resolveComponent(updatedComponent, props);
-    const resolvedComponentWithCustomPurifier = callRenderDomPurifier(resolvedComponent);
-    const result = await processJSX(
-        sanitizeOpeningTagAttributes(resolvedComponentWithCustomPurifier)
-      );
-    return result;
-  }
-   
-  if (document.readyState === "complete") {
-    renderedApp = await handleClientRendering(updatedComponent, getState(props));
-    return renderedApp;
-  } 
-
-  window.addEventListener("DOMContentLoaded", async () => {
-    renderedApp = await handleClientRendering(updatedComponent, getState(props));
-  });
-  
-  return renderedApp;
 }
 
 /**
@@ -1156,45 +1538,195 @@ async function resolveComponent(component, arg) {
 }
 
 
-function sanitizeOpeningTagAttributes(tag) {
-  const regex = /(\w+)=("[^"]*"|'[^']*')/g;
-  return tag.replace(regex, (match, attributeName, attributeValue) => {
-      const sanitizedValue = attributeValue
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;"); //make this to not affect arrow function's '=>' and if it works sanitizeString should be enough
-      return `${attributeName}=${sanitizedValue}`;
-    });
+//CLIENT RENDERING ENGINE
+
+/**
+ * @desc renders component
+ * @param component string
+ * @returns string || void (mutates the DOM)
+ */
+
+async function $render(component, props) {
+  const result = await tryCatchSmart("$render", __$render, component, props);
+  return result;
 }
 
-function deSanitizeOpeningTagAttributes(tag) {
-  const regex = /(\w+)=("[^"]*"|'[^']*')/g;
-  return normalizeHTML(
-    tag.replace(regex, (match, attributeName, attributeValue) => {
-      const sanitizedValue = attributeValue
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-      return `${attributeName}=${sanitizedValue}`;
-    })
+async function __$render(component, props){
+  const updatedComponent = globalThis[component.name];
+  let renderedApp;
+
+  if (!isInitialLetterUppercase(component, "$render")) {
+    throw new Error("A component must start with a capital letter");
+  }
+
+  if(!isBrowserDOM()){
+    const resolvedComponent = await resolveComponent(updatedComponent, props);
+    const resolvedComponentWithCustomPurifier = callRenderDomPurifier(resolvedComponent);
+    const result = await compileTemplate(
+        sanitizeOpeningTagAttributes(resolvedComponentWithCustomPurifier)
+      );
+    return result;
+  } 
+   
+  if (document.readyState === "complete") {
+    isClient = true;
+    renderedApp = await handleClientRendering(updatedComponent, getState(props));
+    return renderedApp;
+  } 
+
+  globalThis.addEventListener("DOMContentLoaded", async () => {
+    renderedApp = await handleClientRendering(updatedComponent, getState(props));
+  });
+  
+  return renderedApp;
+}
+
+/**
+ * @desc renders client component
+ * @param component func
+ * @param arg any
+ * @returns void (mutates the DOM)
+ */
+async function handleClientRendering(component, arg) {
+  if(__$signal.props && __$signal.props.when === "before"){
+    executeSignal(__$signal);
+  }
+
+  const resolvedComponent = await resolveComponent(component, arg);
+
+  if (!resolvedComponent) {
+    return resolvedComponent;
+  }
+
+  const resolvedComponentWithCustomPurifier = callRenderDomPurifier(resolvedComponent);
+  let processedComponent = await compileTemplate(
+    sanitizeOpeningTagAttributes(
+      resolvedComponentWithCustomPurifier
+    )
+  );
+
+  const parsedComponent = convertHtmlStringToDomElement(processedComponent);
+
+  if(!parsedComponent){
+    return " ";
+  }
+
+  updateTargetComponent(parsedComponent);
+
+  if(__$signal.props && __$signal.props.when === "after"){
+    executeSignal(__$signal);
+  }
+
+  return processedComponent;
+}
+
+async function handleClientRerendering(resolvedComponent, targetId, version){
+  if (!resolvedComponent) {
+    return resolvedComponent;
+  }
+
+  // final guard before DOM write
+  if (isStale(targetId, version)) {
+    return null;
+  }
+  const parsedComponent = convertHtmlStringToDomElement(
+    resolvedComponent
+  );
+
+  if(!parsedComponent){
+    return " ";
+  }
+  
+  updateTargetComponent(parsedComponent);
+
+  if(__$signal.props && __$signal.props.when === "after"){
+    executeSignal(__$signal);
+  }
+
+  return resolvedComponent;
+}
+
+//DOM DIFFING & SYNC ENGINE
+
+function syncFormState(tgt, src) {
+  if (!(tgt instanceof HTMLElement && src instanceof HTMLElement)) {
+    return;
+  }
+
+  // ---- INPUT ----
+  if (tgt instanceof HTMLInputElement && src instanceof HTMLInputElement) {
+    if (tgt.type === "checkbox" || tgt.type === "radio") {
+      tgt.checked = src.checked;
+    } else if (tgt.value !== src.value) {
+      tgt.value = src.value;
+    }
+    return;
+  }
+
+  // ---- TEXTAREA ----
+  if (tgt instanceof HTMLTextAreaElement && src instanceof HTMLTextAreaElement) {
+    if (tgt.value !== src.value) {
+      tgt.value = src.value;
+    }
+    return;
+  }
+
+  // ---- SELECT ----
+  if (tgt instanceof HTMLSelectElement && src instanceof HTMLSelectElement) {
+    tgt.selectedIndex = src.selectedIndex;
+    return true;
+  }
+
+  // ---- OPTION ----
+  if (tgt instanceof HTMLOptionElement && src instanceof HTMLOptionElement) {
+    tgt.selected = src.selected;
+  }
+}
+
+function isSourceStale(node) {
+  return (
+    node &&
+    node.nodeType === Node.ELEMENT_NODE &&
+    node.hasAttribute("__stale")
   );
 }
 
-function convertHtmlStringToDomElement(processedComponent) {
-  const parser = new DOMParser();
-  const componentEl = parser.parseFromString(processedComponent, "text/html");
-  const parsedComponent = componentEl.querySelector("body > :first-child");
+function getAttributes(el) {
+  return [...el.attributes]
+    .filter(attr => attr.name !== "id")
+    .map(attr => ({ name: attr.name, value: attr.value }));
+}
 
-  if (!parsedComponent) {
-    return parsedComponent;
+function isSameShape(el1, el2) {
+  if (!el1 || !el2) {
+    return false;
   }
 
-  if (parsedComponent.id === "") {
-    throw "A reRenderable component wrapping div must have an ID";
+  if (el1.tagName !== el2.tagName) {
+    return false;
   }
-  return parsedComponent;
+
+  const attrs1 = getAttributes(el1);
+  const attrs2 = getAttributes(el2);
+
+  if (attrs1.length !== attrs2.length) {
+    return false;
+  }
+
+  return attrs1.every(({ name, value }) =>
+    attrs2.some(attr =>
+      attr.name === name && attr.value === value
+    )
+  );
 }
 
 function syncDomNode(target, source) {
   if (!target || !source || target.nodeType !== source.nodeType) return;
+
+  //If source itself is stale → leave target untouched
+  if (isSourceStale(source)) {
+    return;
+  }
 
   // --- Text Node Sync ---
   if (target.nodeType === Node.TEXT_NODE) {
@@ -1215,7 +1747,6 @@ function syncDomNode(target, source) {
   const srcAttrs = source.attributes;
   const tgtAttrs = target.attributes;
 
-  // Add or update changed attributes
   for (let i = 0; i < srcAttrs.length; i++) {
     const { name, value } = srcAttrs[i];
     if (target.getAttribute(name) !== value) {
@@ -1223,7 +1754,6 @@ function syncDomNode(target, source) {
     }
   }
 
-  // Remove extra attributes
   for (let i = tgtAttrs.length - 1; i >= 0; i--) {
     const { name } = tgtAttrs[i];
     if (!source.hasAttribute(name)) {
@@ -1231,15 +1761,29 @@ function syncDomNode(target, source) {
     }
   }
 
+  syncFormState(target, source);
+
   // --- Sync child nodes ---
   const srcChildren = Array.from(source.childNodes);
   const tgtChildren = Array.from(target.childNodes);
 
+  let isTrue = isSameShape(srcChildren[0], srcChildren[1])
   const max = Math.max(srcChildren.length, tgtChildren.length);
-
+   
   for (let i = 0; i < max; i++) {
     const srcChild = srcChildren[i];
     const tgtChild = tgtChildren[i];
+
+    if(isTrue && !matchingElements(tgtChild, srcChild)){
+      srcChild.removeAttribute("__stale");
+      target.appendChild(srcChild.cloneNode(true));
+      continue;
+    }
+
+    //If source child is stale → skip completely
+    if (srcChild && isSourceStale(srcChild)) {
+      continue;
+    }
 
     if (!srcChild && tgtChild) {
       target.removeChild(tgtChild);
@@ -1259,6 +1803,57 @@ function syncDomNode(target, source) {
   }
 }
 
+function matchingElements(target, source) {
+  if(!target || !source){
+    return true;
+  }
+  
+  if(!target.id && !source.id){
+    return true;
+  }
+
+  return target.id === source.id && $el(source.id);
+}
+
+//DOM HELPERS
+function $el(elementId) {
+  return document.getElementById(elementId);
+}
+
+function useBody(component) {
+  const root = document.body;
+  root.appendChild(component)
+}
+
+function convertHtmlStringToDomElement(processedComponent) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(processedComponent, "text/html");
+
+  // Get ONLY element children (ignore text/comments)
+  const children = Array.from(doc.body.children);
+
+  //No root element
+  if (children.length === 0) {
+    return null;
+  }
+
+  //More than one root element
+  if (children.length > 1) {
+    throw new Error(
+      "Component must have a single root element. Wrap all elements in one parent with an id."
+    );
+  }
+
+  const root = children[0];
+
+  if (!root.id) {
+    throw new Error(
+      "A reRenderable component wrapping element must have an ID"
+    );
+  }
+
+  return root;
+}
 
 function hasVisibleChildren(el) {
   return [...el.childNodes].every(node => {
@@ -1295,97 +1890,24 @@ function shouldStartTransition(domNode) {
     domNode.querySelector("[view-transition-name]");
 }
 
-/**
- * @desc renders client component
- * @param component func
- * @param arg any
- * @returns void (mutates the DOM)
- */
-async function handleClientRendering(component, arg) {
-  if(__$signal.props && __$signal.props.when === "before"){
-    executeSignal(__$signal);
-  }
-
-  const resolvedComponent = await resolveComponent(component, arg);
-
-  if (!resolvedComponent) {
-    return resolvedComponent;
-  }
-
-  const resolvedComponentWithCustomPurifier = callRenderDomPurifier(resolvedComponent);
-  let processedComponent = await processJSX(
-    sanitizeOpeningTagAttributes(resolvedComponentWithCustomPurifier)
-  );
-
-  const parsedComponent = convertHtmlStringToDomElement(processedComponent);
-  if(!parsedComponent){
-    return " ";
-  }
-
-  updateTargetComponent(parsedComponent);
-
-  if(__$signal.props && __$signal.props.when === "after"){
-    executeSignal(__$signal);
-  }
-
-  return processedComponent;
-}
-
 function updateTargetComponent(component) {
   let el = $el(component.id); //current component
+
   if (el == null) {
     useBody(component);
   } else if (!hasVisibleChildren(el)) {
+
     const renderOnlyDOM = () => el.parentNode.replaceChild(component, el);
     handleViewTransition(el, renderOnlyDOM);
   } else if (el && hasVisibleChildren(el)) {
-    // syncDomNode(el, component);
+
     const renderOnlyDOM = () => syncDomNode(el, component);
     handleViewTransition(el, renderOnlyDOM);
     // el.parentNode.replaceChild(component, el);
   } 
 }
 
-
-function makeFunctionFromString(component) {
-  const componentString = component.toString();
-  const updatedComponent = transformTags(componentString, handleAttributes);
-  return Function(`return ${updatedComponent}`)();
-}
-
-function normailzeQuotesInFunctionString(funcStr) {
-  return funcStr
-    .replace(/"(\w+)"\s*:/g, "'$1':")
-    .replace(/:\s*"([^"]*)"/g, ": `$1`")
-    .replace(/"/g, "`");
-}
-
-function formatKeyValuePairs(input) {
-  return input.replace(/(\w+)=\$?{(.*?)}/g, (match, key, value) => {
-    return key + '="${' + value + '}"';
-  });
-}
-
-function transformTags(template, handleAttributes) {
-  template = sanitizeOpeningTagAttributes(formatKeyValuePairs(template));
-  return template.replace(
-    /<([\w-]+)(\s[^<>]*?)?\s*(\/?)>/g,
-    (tag, tagName, rawAttrs = '', selfClosing) => {
-      if (!rawAttrs) return tag; // no attributes → return as-
-      const processedAttrs = handleAttributes(
-        rawAttrs.trim(),
-        true
-      );
-      // Replace only attributes inside the original tag,
-      // keep spacing/line breaks/indentation untouched
-     return tag.replace(rawAttrs, ' ' + deSanitizeString(processedAttrs));
-    }
-  );
-}
-
-function isObject(components){
-   return Object.prototype.toString.call(components) === '[object Object]';
-}
+//COMPONENT REGISTRATION SYSTEM
 
 /**
  * Push function to the global scope
@@ -1396,7 +1918,7 @@ function isObject(components){
 function $register(components){
 
   if(!isObject(components)){
-    throw('An object of components is expected like $register({Home, App})')
+    throw(`An object of components is expected like $register({Home, App})instead of $register(${components.name},...)`)
   }
 
   for( const name in components){
@@ -1425,6 +1947,29 @@ function $register(components){
   }
 
   return globalThis;
+}
+
+function makeFunctionFromString(component) {
+  const componentString = component.toString();
+  const updatedComponent = transformTags(componentString, resolveAttributes);
+  return Function(`return ${updatedComponent}`)();
+}
+
+function transformTags(template, resolveAttributes) {
+  template = sanitizeOpeningTagAttributes(formatKeyValuePairs(template));
+  return template.replace(
+    /<([\w-]+)(\s[^<>]*?)?\s*(\/?)>/g,
+    (tag, tagName, rawAttrs = '', selfClosing) => {
+      if (!rawAttrs) return tag; // no attributes → return as-
+      const processedAttrs = resolveAttributes(
+        rawAttrs.trim(),
+        true
+      );
+      // Replace only attributes inside the original tag,
+      // keep spacing/line breaks/indentation untouched
+     return tag.replace(rawAttrs, ' ' + deSanitizeString(processedAttrs));
+    }
+  );
 }
 
 function arrowToNamed(name, arrowFn) {
@@ -1460,224 +2005,36 @@ function isArrow(fn) {
   return typeof fn === "function" && !fn.hasOwnProperty("prototype") && !fn.toString().trim().startsWith('async');
 }
 
-/*  */
-function $el(elementId) {
-  return document.getElementById(elementId);
-}
+//HYDRATION SYSTEM
 
-function useBody(component) {
-  const root = document.body;
-  root.appendChild(component)
-}
-
-const isCyclic = (input) => {
-  const seen = new Set();
-
-  const dfsHelper = (obj) => {
-    if (typeof obj !== "object" || obj === null) return false;
-    seen.add(obj);
-    return Object.values(obj).some(
-      (value) => seen.has(value) || dfsHelper(value)
-    );
-  };
-
-  return dfsHelper(input);
-};
-
-function unescapeQuotes(props) {
-  props = props.replace(/\\'/g, "'").replace(/\\"/g, '"');
-  return props;
-}
-
-function escapeString(str) {
-  return String(str)
-    .replace(/\\/g, '\\\\') // backslash
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '\\"') // double quote
-    .replace(/\"/g, '\\"') // escaped double quote
-    .replace(/[\x00-\x1F]/g, (ch) => {
-      switch (ch) {
-        case '\b':
-          return '\\b';
-        case '\f':
-          return '\\f';
-        case '\n':
-          return '\\n';
-        case '\r':
-          return '\\r';
-        case '\t':
-          return '\\t';
-        default:
-          return '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
-      }
-    });
-}
-
-const getType = (value) => {
-  return Object.prototype.toString.call(value).slice(8, -1);
-};
-
-function banList(value) {
-  let banned = false;
-  if (value instanceof Date) {
-    banned = true;
-  } else if (value instanceof Map) {
-    banned = true;
-  } else if (value instanceof Set) {
-    banned = true;
-  } else if (value instanceof WeakMap) {
-    banned = true;
-  } else if (value instanceof WeakSet) {
-    banned = true;
-  } else if (typeof value === SYMBOL) {
-    banned = true;
-  } else if (value instanceof RegExp) {
-    banned = true;
-  } else if (typeof value === BIG_INT) {
-    banned = true;
-  }
-  return banned;
-}
-
-function jsonStringify(data) {
-  if (banList(data)) {
-    throw new Error(`${getType(
-      data
-    )} is not allowed as a prop. Wrap it in a function instead.`);
-  }
-  const quotes = '"';
-
-  if (isCyclic(data)) {
-    throw new TypeError("props={props} or props=${props} is not allowed. Use {...props} instead");
-  }
-
-  if (typeof data === BIG_INT) {
-    throw new TypeError(
-      "BigInt is not expected to be used as a prop. Wrap it in a function instead."
-    );
-  }
-
-  if (data === null) {
-    return "null";
-  }
-
-  const type = typeof data;
-
-  if (type === NUMBER) {
-    if (Number.isNaN(data) || !Number.isFinite(data)) {
-      return "null";
-    }
-    return String(data);
-  }
-
-  if (type === BOOLEAN) return String(data);
-
-  if (type === FUNCTION) {
-    const sanitizedString = removeJsComments(data.toString());
-    return `__function__:${sanitizedString}`;
-  }
-
-  if (type === UNDEFINED) {
-    return undefined;
-  }
-
-  if (type === STRING) {
-    return quotes + escapeString(data) + quotes;
-  }
-
-  if (typeof data.toJSON === FUNCTION) {
-    return jsonStringify(data.toJSON());
-  }
-
-  if (Array.isArray(data)) {
-    let result = "[";
-    let first = true;
-    for (let index = ZERO; index < data.length; index++) {
-      if (!first) {
-        result += ",";
-      }
-      result += jsonStringify(data[index]);
-      first = false;
-    }
-    result += "]";
-    return result;
-  }
-
-  let result = "{";
-  let first = true;
-  const entries = Object.entries(data);
-  let index = ZERO;
-  while (index < entries.length) {
-    const [key, value] = entries[index];
-    banList(value);
-
-    if (typeof value === FUNCTION) {
-      console.error(
-        "functions are not expected in an object, for example, use <Home userImage={image} userAction={play} /> instead of <Home user={{image, play}} />"
-      );
-    }
-
-    if (
-      typeof key !== SYMBOL &&
-      value !== UNDEFINED &&
-      typeof value !== FUNCTION &&
-      typeof value !== SYMBOL
-    ) {
-      if (!first) {
-        result += ",";
-      }
-      result += quotes + key + quotes + ":" + jsonStringify(value);
-      first = false;
-    }
-    index++;
-  }
-  result += "}";
-  return result;
-}
-
-const allowedData = {
-  Array: "Array",
-  Function: "Function",
-  Object: "Object"
-};
-
-function isAllowed(data) {
-  if (banList(data)) {
-    throw new Error("Data type not allowed. Wrap it in a function instead");
-  }
-  return allowedData[getType(data)] ? true : false;
-}
-
-function callFunctionWithElementsAndData(func, data=false) {
-
+function hydrate(func, data) {
+  
   if(typeof func !== FUNCTION){
     return false;
   }
 
   const functionName = __$setState(func);
-
+  
   if (data instanceof Event || data instanceof Document) {
-    return `(koras_state['${functionName}'])(${data instanceof Event ? "event" : "this"})`;
+    return `(ks['${functionName}'])(${data instanceof Event ? "event" : "this"})`;
   }
 
   const purifiedProps = $purify(
     deSanitizeString(data, func.name ?? func)
   );
-
+  
   data = data ? __$setState(purifiedProps) : '';
-  const propsReference = data ? `koras_state['${data}']` : ''
-  return `(koras_state['${functionName}'])(${propsReference})`;
+  const propsReference = data ? `ks['${data}']` : '';
+  return `__$callMethod(ks['${functionName}'], ${propsReference})`;
 
 }
 
-function __trigger(func, data) {
-  if (!isBrowser()) {
-    throw "You cannot use $trigger on the server";
-  }
-
+function __$createHydrationHandler(func, data) {
   try {
-    let result = isBrowser() && callFunctionWithElementsAndData(func, data);
-    return result;
+    if(!isBrowserDOM()){
+      return '() => {}';
+    }
+    return hydrate(func, data);
   } catch (error) {
     callRenderErrorLogger(error);
     console.error(
@@ -1686,150 +2043,35 @@ function __trigger(func, data) {
   }
 }
 
-
-function stringify(...args) {
-
-  if(args.length > 2) {
-    throw('An argument is expect. If you want more more, pass an object')
-  }
-
-  const prop = args[ZERO];
-  const component = args[ONE];
-
-  try {
-    if (
-      typeof prop === STRING &&
-      prop.includes("NaN") |
-      prop.includes("[object Object]") |
-      prop.includes(UNDEFINED)
-    ) {
-      return "null";
-    }
-
-    if(prop && typeof prop === STRING || typeof prop === NUMBER){
-      return `${renderIdentity}${sanitizeString(String(prop))}${renderIdentity}`;
-    }
-    
-    if (!isAllowed(prop)) {
-      return sanitizeString(String(prop));
-    }
-
-    const stringifyProp = jsonStringify(prop);
-    return `${renderIdentity}${sanitizeString(stringifyProp)}${renderIdentity}`;
-
-  } catch (error) {
-    callRenderErrorLogger({
-      error,
-      component
-    });
-    console.error(`${error} in ${component}`);
-  }
+function __$callMethod(fn, data){
+  return fn(data);
 }
 
-function $purify(props, component) {
-  if(props === "{}") return {};
-  if(props === "[]") return [];
-  if (typeof props !== STRING) return props;
-  try {
-    if (props.startsWith(renderIdentity)) {
-      props = deSanitizeString(props.slice(18, -18));
-      if(props.startsWith("__function__:")){
-        return preprocessFunction(props);
-      }
-    }
-    if (!props.includes('"', ZERO)) {
-      props = '"' + props + '"';
-    }
-
-    if (props.includes(renderIdentity)) {
-      return ("You're not allowed to use reserved ID (_9s35Ufa7M67wghwT_) in data");
-    }
-
-    return normalizeNumberOrBoolean(JSON.parse(unescapeQuotes(props)));
-  } catch (error) {
-    callRenderErrorLogger({
-      error,
-      component
-    });
-    console.error(`${error} in ${component}`);
-  }
-}
-
-function If({condition=false, children} = {}){
-  return condition ? children : "";
-}
-
-function For({ each = [], render, target = "eueei", position, fallback } = {}) {
-  // Get parent element
-  let parent = target.startsWith("#") 
-      ? $select(target) 
-      : $select(`#${target}`);
-
-  // Parse items array if it's a string
-  const items = Array.isArray(each) ? each : JSON.parse(each);
-
-  // If no items, use fallback if provided
-  if (!items || items.length === 0) {
-    if (typeof fallback === "function") {
-      const fallbackContent = fallback();
-
-      // Append fallback instead of replacing innerHTML
-      if (parent) {
-        parent.innerHTML = position === "prepend"
-          ? `${fallbackContent} ${parent.innerHTML}`
-          : `${parent.innerHTML} ${fallbackContent}`;
-      }
-
-      return fallbackContent;
-    }
-    return typeof fallback === STRING ? fallback : 'loading...'; // No items and no fallback
-  }
-
-  const key = parent ? parent.children.length : items.length;
-  const lastItem = items[items.length - 1];
-  const lastKey = lastItem && (lastItem.id ?? lastItem);
-
-  // Avoid duplicate rendering if last key matches
-  if (parent && lastKey === Number(key)) {
-    return parent.innerHTML;
-  }
-
-  // Render children
-  let children = items.map((item, index) => {
-    index = parent ? index + Number(parent.children.length) : index;
-    return globalThis[`${render}`]({ item, index });
-  }).join(" ");
-
-  // Append or prepend to parent
-  if (parent) {
-    children = position === "prepend" 
-           ? `${children} ${parent.innerHTML}`
-           : `${parent.innerHTML} ${children}`;
-    parent.innerHTML = children; // update DOM
-  }
-
-  return children;
-}
-
+//Globalisation of INTERNAL UTILITIES
 function registerInternalUtils() {
   globalThis["$render"] = $render;
   globalThis["If"] = If;
-  globalThis["For"] = For;
   globalThis["stringify"] = stringify;
-  globalThis["__trigger"] = __trigger;
+  globalThis["__trigger"] = __$createHydrationHandler;
+  globalThis["__$callMethod"] = __$callMethod;
   globalThis["$purify"] = $purify;
   globalThis["spreadKorasProps"] = spreadKorasProps;
   globalThis["__$setState"] = __$setState;
   globalThis["__$signal"] = {};
+  globalThis["isClient"] = false;
 }
 
 registerInternalUtils();
+
+//Built-in components
+function If({condition=false, children} = {}){
+  return condition ? children : "";
+}
 
 export {
   $render,
   $register,
   stringify,
   $purify,
-  If,
-  For
+  If
 };

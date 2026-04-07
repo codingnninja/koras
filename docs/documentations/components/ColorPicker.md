@@ -38,7 +38,12 @@ function PickerIcon({ color }) {
 
 ```js
 function ColorCodeIndicator({ colorCode }) {
-  return `<div id="color-code-indicator" class="border border-transparent shadow px-4 py-2 leading-normal text-gray-700 bg-white rounded-md focus:outline-none focus:shadow-outline mb-2 cursor-pointer" style="font-weight:700">color code: ${colorCode}</div>`;
+  return `
+    <div 
+      id="color-code-indicator" 
+      class="border border-transparent shadow px-4 py-2 leading-normal text-gray-700 bg-white rounded-md focus:outline-none focus:shadow-outline mb-2 cursor-pointer" style="font-weight:700">
+        color code: ${colorCode}
+    </div>`;
 }
 ```
 
@@ -90,13 +95,13 @@ function ColorPicker(color = "indigo-900") {
 ## $render ColorPicker
 
 ```js
-$register(
+$register({
   PickerIcon,
   PickerIndicatorRenderer,
   PickerIcon,
   ColorCodeIndicator,
   ColorPicker
-);
+});
 
 $render(ColorPicker);
 ```

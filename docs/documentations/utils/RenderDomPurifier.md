@@ -11,7 +11,7 @@ function RenderDomPurifier(htmlString) {
   return DOMpurify.sanitize(htmlString);
 }
 
-$register(RenderDomPurifier);
+$register({ RenderDomPurifier });
 ```
 
-Once you register `RenderDomPurifier` and imported `DOMpurify`, Koras will always call it to further sanitize `htmlString`.
+Once you import `DOMpurify` and register `RenderDomPurifier`, Koras will always call it to further sanitize `htmlString`.

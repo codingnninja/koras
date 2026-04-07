@@ -2,11 +2,11 @@
 
 Interoperability as regards JavaScript means the ability of code to run across runtimes. There are many runtimes for JavaScript all of which operate differently in different scenerios, so it is necessary to make sure your code runs in all runtimes.
 
-## Handling Interop in $render.jsx
+## Handling Interop
 
 Nowadays, frontend code is pre-rendered on the server to optimize for speed and some operating systems like `Android` and `iOS`, so it is necessary to write code that runs everywhere.
 
-The rule of thumb to do so is to always put runtime functions, modules or objects in closures and call them conditionally based on runtime capabilities.
+The rule of thumb to do so is to always put runtime functions, modules or objects in closures and use the closures as an event handler or trigger them conditionally.
 
 ```js
 function Notes({ notes, isBrowser }) {
@@ -17,19 +17,16 @@ function Notes({ notes, isBrowser }) {
     return { notes: notes.concat(note), isBrowser: true };
   };
 
-  const props = isBrowser && saveNotes(notes);
   return `
     <div id="notes">
       <!-- the rest of the code -->
-      <button onclick="$render(Notes, ${props})"
+      <button onclick="${saveNote(notes)}"
     </div>
   `;
 }
 ```
 
-In `Notes` component, we called `saveNotes` conditionally with is `isBrowser` which means it won't be called on the server if initial rendering happens on the server.
-
-If not for the closure and the conditional call, rendering `Notes` on the server will cause an error.
+In `Notes` component, `saveNotes` is used in as an event handler so it is differed to the frontend.
 
 ## Identifying runtime code
 

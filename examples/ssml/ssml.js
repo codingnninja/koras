@@ -26,7 +26,7 @@ export function Speak({children}) {
 }
 
 export function Mood({ tone = "neutral", children } = {}) {
-
+console.log(tone, children);
   const tones = {
       // Positive
       excited:        { pitch: 1.3, rate: 1.2, volume: 1 },
@@ -66,7 +66,6 @@ export function Mood({ tone = "neutral", children } = {}) {
   
     const settings = tones[tone] || tones["neutral"];
     speechQueue.push({type: "speech", text:children, settings})
-    // helper.renderSpeech(children, settings);
     return children;
   }
   
@@ -175,7 +174,7 @@ export function NaturalParagraph({
   rate = 1.0,
   pitchBoost = 0.15,
   rateBoost = 0.1,
-}) {
+} = {}) {
   // const helper = SpeechHelper();
   // const {node, rest} = helper.extractNextNode(children);
 
@@ -199,5 +198,5 @@ export function Break({ time = "500ms" } = {}) {
     return " ";
   }
 
-$register(MySpeech, NaturalParagraph, Speak, Mood, Break);
+$register({MySpeech, NaturalParagraph, Speak, Mood, Break});
 

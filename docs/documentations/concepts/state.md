@@ -1,6 +1,6 @@
 # State
 
-State is current data which is liable to change based on predefined or user interactions. In `koras.jsx`, state is declared with a normal JavaScript variable with an assigned value. There are two kinds of state -- unit and composite state.
+State is current data which is liable to change based on predefined or user interactions. In `koras`, state is declared with a normal JavaScript variable with an assigned value. There are two kinds of state -- unit and composite state.
 
 ### Unit state
 
@@ -23,27 +23,13 @@ const person = {
 }
 ```
 
-A state can be viewed in two context in `koras.jsx` -- global and local component contexts.
+A state can be viewed in two context in `koras` -- global and local component contexts.
 
 ### State in a local component context
 
-A component state is the current or latest data of the component. Components in `koras.jsx` can use unit and composite state.
+A component state is the current or latest data of the component. Components in `koras` can use unit and composite state but composite state is recommended.
 
-- Unit state in a `koras.jsx` component
-
-A unit state is used in a component when a component changes only one view property.
-
-```js
-const Count = (count = 0) {
-  //component body
-}
-```
-
-You can declare your state in a unit like above.
-
-It is suitable when you only need to pass one property around for re-rendering.
-
-- Composite state in a `koras.jsx` component
+- Composite state in a `koras` component
 
 A composite state is used in a component when a component changes many view properties.
 
@@ -83,14 +69,17 @@ A composite state is suitable when you have to pass many properties around for r
 
 #### Scoping states
 
-States in `koras.jsx` are scoped to tags (local scope) so there are not accessible to JavaScript by default. A state scoped to a tag is only accessible to the components that access it.
+States in `koras` are scoped to tags (local scope) so there are not accessible to JavaScript by default. A state scoped to a tag is only accessible to the components that access it.
 
 ```js
-const Counter = (count = 0) => {
+const Counter = ({ count = 0 } = {}) => {
+  function reRender(count){
+    $render(Counter, ${count + 1})
+  }
   return `
     <div id="counter">
-      <button 
-        onClick="$render(Counter, ${count + 1})" 
+      <button
+        onClick="${reRender(count)}"
         style="height:30px; width:100px">Count is ${count}
       </button>
     </div>
@@ -98,7 +87,7 @@ const Counter = (count = 0) => {
 };
 ```
 
-In the component above, `count` is scoped to `button` via `onClick="$render(Counter, ${count + 1})"` for re-rendering. Whenever the button is clicked, `Counter` will be called with a predetermined state.
+In the component above, `count` is scoped to `button` for re-rendering. Whenever the button is clicked, `Counter` will be called with a predetermined state.
 
 Sometimes, it is impossible to pass props to `$render` because it will add latest `elements` as the last child of a component so trigger buttons will be repeated. Then, you can scope states to a non-triggering tag.
 
@@ -143,9 +132,3 @@ Note: `Props` is not passed to `$render` in the examples above. It is added to a
 :::
 
 You can put a `global` level state in a tag in `App` component and any component that need it can access it.
-
-### State management tools
-
-By default, it is straight forewards to manage state with `$render` and `js` scopes. Somestimes, you need state management tools to deal with state in your applications efficiently.
-
-You probably need a state management tool when there are multiple inter-dependency of components, that is, many non-nested or unrelated components have to change together.

@@ -1,14 +1,16 @@
 # $register utility
 
-`$register` utility is only used in esModules to make components or any functions, in a module, accessible to `$render`. If you don't use `$register` in esModules, your components won't be accessible to `$render`.
+`$register` utility is used to make components or any functions accessible to `$render`. If you don't use `$register`, your components won't be accessible to `$render`.
 
 ```js copy
-$register(component, function, etc...);
+$register({ Component, AnotherComponent, etc...});
 ```
+
+`$register takes an object of components.
 
 ### $register a component
 
-You only need to $register a component where it is imported and used (not where it is created).
+You only need to $register a component where it is imported and used (not where it is created or exported).
 
 ```js
 export const Shuffle = (status = false) => {
@@ -45,7 +47,7 @@ const App = () => {
     `;
 };
 
-$register(Shuffle);
+$register({ Shuffle });
 ```
 
 You see! We registered `Shuffle` in the `App` component where it is used. You have to `$register` a component where you use it.
@@ -57,10 +59,3 @@ Note: Once you `$register` a component, you don't need to re-register it if you 
 ### $register a function
 
 Functions from a module are not accessible to DOM events like `onclick` by default. You can make them accessible by using `$register` on them.
-
-```js
-import { sql } from "./db";
-$register(sql);
-```
-
-Click to check the common errors in using `$register`.

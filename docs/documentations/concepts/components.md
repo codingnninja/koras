@@ -2,7 +2,7 @@
 
 A component is a part of an object that is detachable and pluggable to another object of the same family. For example, a computer has several components such as the monitor, keyboard, mouse and system unit to mention few. For you to have a computer, you need to bring these components together.
 
-Just like in a computer, koras components are detachable and pluggable to another component that supplies suitable props. Components in koras.jsx and React are similar except koras.jsx uses JavaScript `template literals` to wrap every `HTML string` to be returned.
+Just like in a computer, koras components are detachable and pluggable to another component that supplies suitable props. Components in `koras` and React are similar except `koras` uses JavaScript `template literals` to wrap every `HTML string` to be returned.
 
 :::info
 
@@ -25,7 +25,7 @@ This means you can combine many UI components or units to make main UIs.
 </App>
 ```
 
-In `Koras.js`, the `id` in `<div id="app"></div>` is used to identify a component because it is unique. Component `id` is only useful for re-rendering and scoping stylesheet.
+In `Koras.js`, the `id` in `<div id="app"></div>` is used to identify a component because it is unique. Component `id` is only useful for re-rendering.
 
 ```js
 export function Home() {
@@ -41,7 +41,7 @@ export function Home() {
 }
 ```
 
-Like that, you can collocate HTML, CSS and JavaScript for a component without worrying about affecting another component accidentally.
+Like that, you can collocate HTML, CSS and JavaScript in a component.
 
 - Reusability
 
@@ -112,7 +112,7 @@ You call it like:
 function List(items) {
   return `
     <div id="list">
-      <ul>
+      <ul id="list-items">
         ${items.map((item) => `<li>${item.title}</li>`)}
       </ul>
     </div>
@@ -178,7 +178,7 @@ Any component with a parameter that has no default value expects an argument whe
 #### Unit state
 
 ```js
-const Counter = (count) => {
+const Counter = ({ count = 0 } = {}) => {
   return `
     <div id="counter">
       <button 
@@ -242,14 +242,19 @@ $render(Profile, user);
 - As event handlers
 
 ```js
-onclick = "$render(Counter, 0)";
-onhover = "$render(Profile, {user})";
-onkeyup = "$render(Profile, ${user})";
-onpointermove = "$render(Profile, {{x:this.x, y:this.y}})";
+function Profile() {
+  function show(props) {
+    $render(Profile, props);
+  }
+
+  return `
+   <button onclick="${show(user)}">show</button>
+  `;
+}
 ```
 
 :::warning
-Note: You can't `$render` a component in its own body but you can `$render` another component. If you have to do so, make sure you add a stopping point like in a Recursion because the operation will be recursive and loop "forever and ever" if no stopping point is provided.
+Note: $render works everywhere but it is best used within function with a component.
 :::
 
 ##### Use a parameter with a default value
@@ -259,11 +264,11 @@ Any component with a parameter that has a default value doesn't expect an argume
 #### Unit state
 
 ```js
-const Counter = (count = 0) => {
+const Counter = ({ count = 0 } = {}) => {
   return `
     <div id="counter">
       <button 
-        onClick="$render(Counter, ${count + 1})" 
+        onClick="$render(Counter, ${{ count: count + 1 }})" 
         style="height:30px; width:100px">Count is ${count}
       </button>
     </div>
@@ -301,6 +306,6 @@ function Profile({ id = 1, person = {}, children = { a: "yes" } } = {}) {
 }
 ```
 
-Basically, a `koras.jsx` component is still a JavaScript function that has a name with `PascalCase` (Koras will support kebab-case in the future).
+Basically, a `koras` component is still a JavaScript function that has a name with `PascalCase` (Koras will support kebab-case in the future).
 
-A common error to avoid in `$render.jsx` or `React` while crafting components is Prop Drilling. Learn more from [How to avoid Prop Drilling in React or $render](https://www.freecodecamp.org/news/avoid-prop-drilling-in-react/)
+A common error to avoid in `$koras` or `React` while crafting components is Prop Drilling. Learn more from [How to avoid Prop Drilling in React or $render](https://www.freecodecamp.org/news/avoid-prop-drilling-in-react/)

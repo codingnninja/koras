@@ -8,10 +8,14 @@ const List = () => {
     name: "Alice",
     age: 24,
   };
-  return `<Person id="list"> ${list.name} />`;
+  return `
+    <Person id="list"> 
+      ${list.name} 
+    </Person>
+  `;
 };
 ```
 
 The `list` variable and the `Person` component are in the context of the `List` component because they execute within the `List` component.
 
-Improper use of contexts always lead to `Prop drilling` in `React` and `koras.jsx`. [Learn more](https://www.freecodecamp.org/news/avoid-prop-drilling-in-react/) on how to avoid `prop drilling` intuitively in any component based UI libraries.
+Improper use of contexts always lead to `Prop drilling` in `React` and `koras`. [Learn more](https://www.freecodecamp.org/news/avoid-prop-drilling-in-react/) on how to avoid `prop drilling` intuitively in any component based UI libraries.

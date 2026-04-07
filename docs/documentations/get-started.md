@@ -1,8 +1,8 @@
 # Getting Started with Koras.jsx
 
-Koras.jsx is a no-build JSX library that works in browsers and servers without a virtual DOM or tagged templates. It is simply the only kind of `JSX` that achieves the true aim of the web component without the known flaws.
+Koras.jsx is a no-build JSX library that works in clients and servers without a virtual DOM or tagged templates. It is simply the only kind of `JSX` that achieves the true aim of the web component without the known flaws.
 
-It introduces an intuitive state management system that makes `JSX` works everywhere, in browsers and servers by using an arithmetic progression formula: `nth = a + (n - 1)d`.
+It introduces an intuitive state management system that makes `JSX-like` workflow works everywhere, in clients and servers by using Lazy Recursion (Discovered by the creator of koras).
 
 It's intuitive, super fast and flexible.
 
