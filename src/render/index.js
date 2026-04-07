@@ -40,18 +40,6 @@ let patterns = {
   isComponentCloseTag: /<\/([A-Z][A-Za-z0-9]*)>/,
 };
 
-// let patterns = {
-//   anyNode: /(<[^<>]+>)/,
-//   cap: /[A-Z]/,
-//   self: /<([^\s<>\/]+)([^<>]*?)\/>/,
-//   close: /<\/([A-Za-z][\w-]*)>/,//<\/([^\s<>]+)>/,
-//   start: /<([A-Za-z][\w-]*)(\s+[^<>]*?)?>/, //<([^\s<>]+) ?([^<>]*)>/,
-//   text: /<(?:\/?[A-Za-z]+\b[^>]*>|!--.*?--)>/,
-//   firstLetterCapped: /<([A-Z][A-Za-z0-9]*)\b/,//<([A-Z][A-Za-z0-9]*)/,
-//   isComponentCloseTag: /<\/[A-Z][A-Za-z0-9]*>/,
-//   isNotTag: /^(?!<\w+\/?>$).+$/,
-// };
-
 //ENVIRONMENT HELPERS
 function isBrowserDOM() {
   return typeof window === "object" && typeof document === "object";
