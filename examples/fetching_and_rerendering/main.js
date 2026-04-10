@@ -1,4 +1,4 @@
-import { $render, $register, If} from "../../dist/esm/render.js";
+import { $render, $register, If} from "../../dist/esm/koras.js";
 import { $select} from "../../dist/esm/query.js";
 
 // const { $render, $register, stringify, $select, $purify } = render;
@@ -165,7 +165,6 @@ function App(props) {
         <div id="app" style="color: #000;" class="hide">
           <ListItems />
           <Counteral />
-          <Counteral id=${1} />
           <CounterFib />
           <Counter /><!-- It should count={0} should be made to work or give validation error.-->
           <Home 
@@ -220,7 +219,6 @@ const Home = ({ images, deeplyNested, ya, user }) => {
 
 const Others = (props) => {
   const { images, play, pause, setVolume, audioUrL, memoize } = props;
-  console.log(props), "get jere md;";
   
   return ` 
       <div id="page">
@@ -242,21 +240,11 @@ function Item({item} = {}){
   `;
 }
 
-function For({id, component, items, fallback}){
-
-  return`
-  <section id="items-${id}"
-    ${
-      items && items.length !== 0 ? items.map(item => `
-        <${component} {...item} />
-      `) : typeof fallback === "function" ? fallback() : fallback
-    }
-  </section>
-  `
-}
-
-
 function ListItems({items = [{id:1}, {id:2},{id:3}]} = {}){
+
+  function reRender(){
+    $render(ListItems, {items:[{id:4}, {id:5},{id:6}]});
+  }
 
   return`
     <section id="list">
@@ -267,9 +255,9 @@ function ListItems({items = [{id:1}, {id:2},{id:3}]} = {}){
           `) : 'No Item found'
         }
         </section>
-        <button 
-          onclick="$render(ListItems, ${{items:[{id:4}, {id:5},{id:6}]}})"
-        > re-render </button>
+        <button onclick="${reRender()}"> 
+          re-render 
+        </button>
     </section>
   `;
 }
