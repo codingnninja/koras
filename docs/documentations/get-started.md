@@ -1,6 +1,6 @@
 # Getting Started with Koras.jsx
 
-Koras.jsx is a no-build JSX library that works in clients and servers without a virtual DOM or tagged templates. It is simply the only kind of `JSX` that achieves the true aim of the web component without the known flaws.
+Koras.jsx is a no-build JSX-like library that works in clients and servers without a virtual DOM or tagged templates. It is simply the only kind of `JSX` that achieves the true aim of the web component without the known flaws.
 
 It introduces an intuitive state management system that makes `JSX-like` workflow works everywhere, in clients and servers by using Lazy Recursion (Discovered by the creator of koras).
 
@@ -45,7 +45,7 @@ Now, you can enjoy all the goodies that come with Koras.jsx.
 ## Development tools
 
 - Install `VSCode` editor.
-- Install `leet-html` (a VSCode extension) for syntax highlighting.
+- Install `Template-literals` and `leet-html` (a VSCode extension) for syntax highlighting.
 - Install `Auto complete tag` to automatically add close tag and rename paired tag.
 
 ## Quick Demo - Counter with $select (Browser)
@@ -82,15 +82,20 @@ Now, you can enjoy all the goodies that come with Koras.jsx.
 import { $render, $register } from "@codingnninja/koras";
 
 const Counter = (count = 0) => {
+  function reRender(){
+    $render(Counter, ${count + 1});
+  }
+
   return `
     <div id="counter">
-      <button 
-        onClick="$render(Counter, ${count + 1})" 
+      <button
+        onClick="${reRender()}"
         style="height:30px; width:100px">Count is ${count}
       </button>
     </div>
   `;
 };
+
 $register(Counter);
 $render(Counter);
 ```
@@ -111,11 +116,15 @@ $render(Counter);
         $render,
         $register,
       } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
-      const Counter = (count = 0) => {
+      const Counter = ({count = 0} = {}) => {
+        function reRender(){
+          $render(Counter, ${count + 1});
+        }
+
         return `
           <div id="counter">
-            <button 
-              onClick="$render(Counter, ${count + 1})" 
+            <button
+              onClick="${reRender()}"
               style="height:30px; width:100px">Count is ${count}
             </button>
           </div>
@@ -136,27 +145,3 @@ $render(Counter);
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
-
-## Scaffold Koras projects
-
-- scaffold
-
-```sh copy
-npx create-render-app music-player
-```
-
-::: info
-Note: since `Koras.jsx` is similar to React, this is to remind you to never scaffold your `React` application with `create-react-app`; use `Remix` or `Next` instead.
-:::
-
-- change directory to the project.
-
-```sh copy
-cd music-player
-```
-
-- run local server.
-
-```sh
-npm run dev
-```

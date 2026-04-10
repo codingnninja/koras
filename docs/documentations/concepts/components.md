@@ -12,7 +12,7 @@ Just like in a computer, koras components are detachable and pluggable to anothe
 
 ## Why use components?
 
-Components are use for many reasons and two most important of all are `Composability` and `Reusability`.
+Components are use for many reasons and the two most important of all are `Composability` and `Reusability`.
 
 - Composibility
 
@@ -41,7 +41,7 @@ export function Home() {
 }
 ```
 
-Like that, you can collocate HTML, CSS and JavaScript in a component.
+You can collocate HTML, CSS and JavaScript in a component.
 
 - Reusability
 
@@ -235,8 +235,8 @@ function Profile({ id, person, children }) {
 
 ```js
 //In a component/function body
-$render(Counter, 0);
-$render(Profile, user);
+$render(Counter, { count: 0 });
+$render(Profile, { user });
 ```
 
 - As event handlers

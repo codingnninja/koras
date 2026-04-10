@@ -6,7 +6,7 @@ Interoperability as regards JavaScript means the ability of code to run across r
 
 Nowadays, frontend code is pre-rendered on the server to optimize for speed and some operating systems like `Android` and `iOS`, so it is necessary to write code that runs everywhere.
 
-The rule of thumb to do so is to always put runtime functions, modules or objects in closures and use the closures as an event handler or trigger them conditionally.
+The rule of thumb to do so is to always put runtime functions, modules or objects in a method and use the method as an event handler or trigger them conditionally.
 
 ```js
 function Notes({ notes, isBrowser }) {
@@ -14,7 +14,7 @@ function Notes({ notes, isBrowser }) {
     const noteElement = $select("#noteForm");
     const note = noteElement.value;
     localStorage.setItem("notes", JSON.stringify(notes));
-    return { notes: notes.concat(note), isBrowser: true };
+    $render(Notes, { notes: notes.concat(note), isBrowser: true });
   };
 
   return `
@@ -34,4 +34,4 @@ Runtime code is any functions, modules, class and objects you do not declare but
 
 For example, `fetch()`, `document`, `Buffer`, `navigator`, `window` and many others are runtime code because you do not declare them. You only use them.
 
-It is recommended you put runtime code in closures when you have to run them on multiple `runtimes`.
+It is recommended you put runtime code in a method/function when you have to run them on multiple `runtimes`.

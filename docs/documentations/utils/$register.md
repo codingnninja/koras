@@ -13,13 +13,17 @@ $register({ Component, AnotherComponent, etc...});
 You only need to $register a component where it is imported and used (not where it is created or exported).
 
 ```js
-export const Shuffle = (status = false) => {
+export const Shuffle = ({ status = false } = {}) => {
+  function reRender(){
+    $render(Shuffle, ${!status});
+  }
+
   return `
     <div id="shuffle">
       <button class="btn-icon toggle">
-        <span 
+        <span
           class="material-symbols-rounded ${status ? "active" : ""}"
-          onclick="$render(Shuffle, ${!status})"
+          onclick="${reRender()}"
         >shuffle ${status} </span>
       </button>
     </div>
@@ -55,7 +59,3 @@ You see! We registered `Shuffle` in the `App` component where it is used. You ha
 :::info
 Note: Once you `$register` a component, you don't need to re-register it if you have to use it in another component.
 :::
-
-### $register a function
-
-Functions from a module are not accessible to DOM events like `onclick` by default. You can make them accessible by using `$register` on them.

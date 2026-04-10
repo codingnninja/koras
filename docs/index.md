@@ -3,12 +3,12 @@ layout: home
 
 # Hero section
 hero:
-  name: koras.jsx
+  name: koras.js
   text: Cross-platform rendering...
   image:
     src: /hero-logo.svg
     alt: koras.jsx logo
-  tagline: Enjoy simple and no-build JSX in browsers and servers with vanilla JavaScript.
+  tagline: Enjoy hybrid components in browsers and servers with vanilla JavaScript.
   actions:
     - theme: brand
       text: Get Started

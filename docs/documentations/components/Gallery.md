@@ -9,7 +9,7 @@ Note: Use Tailwind CSS to view Gallary properly.
 ### Import $render utilities
 
 ```js
-import { $render, stringify } from "@codingnninja/koras";
+import { $render, stringify, $register } from "@codingnninja/koras";
 ```
 
 ### Gallery component
@@ -76,6 +76,12 @@ const CurrentImage = ({ src, alt }) => {
       </div>
     `;
 };
+```
+
+### Register components
+
+```js
+$register({ Gallary, Pagination, CurrentImage });
 ```
 
 ### Render Gallery

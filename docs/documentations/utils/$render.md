@@ -1,6 +1,6 @@
 # $render utility
 
-$render adds `JSX-like` tags to the DOM with the `#root id` or a target `id` of a component. It enables JSX-like tags directly in browsers without a virtual DOM or tagged templates.
+$render adds `JSX-like` tags to the DOM with the `#root id` or a target `id` of a component. It enables JSX-like tags directly in browsers without a virtual DOM, compilation or tagged templates.
 
 ```js copy
 $render(Component, props?optional);
@@ -117,35 +117,5 @@ export const Shuffle = ({ status = false } = {}) => {
    `;
 };
 ```
-
-You can also import utils directly from `Shuffle` using `import()`. Note that units or modules not accessible in the global scope are not accessible within a component.
-
-```js
-export const Shuffle = async (status = false) => {
-  const { toggle } = await import(_$links.utils);
-
-  return `
-     <div id="shuffle">
-       <button class="btn-icon toggle">
-         <span
-           class="material-symbols-rounded ${status ? "active" : ""}"
-           onclick="${toggle(status)}"
-         >shuffle ${status} </span>
-       </button>
-     </div>
-   `;
-};
-```
-
-- Use the component
-
-```js copy
-import { Shuffle } from "./Shuffle";
-
-$register(Shuffle);
-$render(Shuffle);
-```
-
-If you have rendered `Shuffle`, you need to remove `$render(Shuffle);` at the end of the code snippets above.
 
 `$render` is a built-in utility to render and re-render web-JSX without a virtual DOM, compilation or tagged templates.

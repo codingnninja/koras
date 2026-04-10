@@ -87,48 +87,57 @@ const Counter = ({ count = 0 } = {}) => {
 };
 ```
 
-In the component above, `count` is scoped to `button` for re-rendering. Whenever the button is clicked, `Counter` will be called with a predetermined state.
-
-Sometimes, it is impossible to pass props to `$render` because it will add latest `elements` as the last child of a component so trigger buttons will be repeated. Then, you can scope states to a non-triggering tag.
+- Another example
 
 ```js
-const AddTodoForm = (id = 0) => {
-  const todoForm = $select(`#todo-form>:nth-last-child(2)`);
-  id = todoForm ? Number(todoForm.dataset.id) + 1 : id;
+const AddTodoForm = ({items = []} = {}) => {
+
+  functin reRender(items){
+    const newItem = {id: items.length + 1}
+    items.push(newItem);
+    $render(AddTodoForm, items);
+  }
 
   return `
-    <div 
-      id="todo-form"
-      class="todo-form" 
-      data-append="#todo-form"
-    >
-      <input type="text" id="input-${id}" data-id="${id}">
+    <div id="todo-form">
+      ${
+        !items && items.length > 0 ? items.map( item => `
+          <input type="text" id="input-${item.id}">
+        `) : 'No item yet!'
+      }
+    <button onclick="${reRender(items)}">plus</button>
     </div>
-    <button onclick="$render(AddTodoForm)">plus</button>
   `;
 };
 ```
 
-- Another example or style.
+In the components above, `count` and `items` are scoped to `button` for re-rendering. Whenever the button is clicked, `Counter` or `AddTodoForm` will be called with a predetermined state.
+
+- Async example
 
 ```js
-export async function Articles() {
-  const stateTag = $select(`#articles-state`);
-  const nextPage = stateTag ? Number(stateTag.value) + 1 : 1;
-  const articles = await blog.loadData(nextPage);
+export async function Articles({ page = 0 } = {}) {
+  const articles = await blog.loadData(page);
 
   return `
-    <input type="hidden" value="${nextPage}" id="articles-state">
-    <div id="articles" data-append="#articles">
-     <-- The rest of the code -->
+    <div id="articles">
+     ${
+       articles && articles.length > 0
+         ? articles.map(
+             (article) => `
+        <section id=${article.id}>
+          <h2> ${article.title}</h2>
+        </section>
+      `
+           )
+         : " No article yet!"
+     }
+      <button 
+        type="button" 
+        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" 
+        onclick="$render(Articles, ${{ page: page + 1 }})"
+      > Load more...</button>
     </div>
-    <button type="button" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="$render(Articles)">Load more...</button>
   `;
 }
 ```
-
-:::info
-Note: `Props` is not passed to `$render` in the examples above. It is added to a tag and retrieved by the component. And triggers are outside of the component wrapping `div` so that the `trigger` won't be re-rendered.
-:::
-
-You can put a `global` level state in a tag in `App` component and any component that need it can access it.

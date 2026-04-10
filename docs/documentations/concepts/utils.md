@@ -51,7 +51,7 @@ function Storage({ prefix = "" } = {}) {
 }
 ```
 
-Usage:
+-Usage:
 
 ```js
 $register({ Storage });
@@ -81,7 +81,7 @@ _$utils.doSomething();
 
 ### Utils via import()
 
-You can create modules and import them with `import` at the top level of a file or `import()` within a component.
+You can create modules and `import()` within a component.
 
 ```js
 export async function Publish() {

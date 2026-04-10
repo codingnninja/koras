@@ -1,8 +1,8 @@
 # Rendering
 
-Rendering refers to the process of displaying or updating the user interface of a web application. `koras` uses `$render(Component, props)` utility to achieve React like rendering without a virtual DOM or tagged templates.
+Rendering refers to the process of displaying or updating the user interface of a web application. `koras` uses `$render(Component, props)` utility to achieve React like rendering without a virtual DOM, tagged templates or compilation.
 
-Though rendering systems in `koras` and `React` are similar, the operating systems in both frameworks are different because `koras` makes use of `Lazy recursion` or `Ayo's recursion` for its rendering and re-rendering algorithm in place of `Reconciliation`, `Diffing`, `Batching` and so on.
+Though rendering systems in `koras` and `React` are similar, the operating systems in both frameworks are different because `koras` makes use of `Lazy recursion` or `Ayo's recursion` for its rendering and re-rendering algorithm.
 
 Using `Lazy recursion` makes rendering fast and state management more comfortable in koras.
 
@@ -19,28 +19,30 @@ You can render different forms of elements and components based on some certain 
 > conditionally render elements
 
 ```js
-if (hasPaid) {
-  return `<li class="item">${name} ✔</li>`;
-}
-return `<li class="item">${name}</li>`;
+import { If } from 'koras.js'
+
+<If condition=${hasPaid}>
+  <li class="item">${name} ✔</li>
+</If>
+
+<If condition=${!hasPaid}>
+  <li class="item">${name}</li>
+</If>
+
 ```
 
 > conditionally render components
 
 ```js
-if (isExpensive) {
-  return `<OriginalItem />`;
-}
-return `<InferiorItem />`;
 
-//or
+<If condition=${isExpensive}>
+  <OriginalItem />
+</If>
 
-const content;
-if (isExpensive) {
-  content = `<OriginalItem />`;
-}
-content = `<InferiorItem />`;
-return content;
+<If condition=${!isExpensive}>
+  <InferiorItem />
+</If>
+
 ```
 
 > conditionally call/trigger a function
@@ -90,46 +92,6 @@ return `
 
 ```js
 const props = isBrowser && saveNotes(notes);
-```
-
-- ##### Conditional rendering with the nullish coalescing operator `??`
-
-You can use the the nullish coalescing operator to conditionally render attributes, contents or components as a fallback.
-
-> conditionally render content
-
-```js
-return `
-  <li className="item">
-    Welcome, ${name ?? "our esteemed customer"}
-  </li>
-`;
-```
-
-> conditionally render attributes
-
-```js
-return `
-  <li class="${paid ?? "no paid"}">
-    Rice
-  </li>
-`;
-```
-
-> conditionally render components
-
-```js
-return `
-  <li class="item">
-    ${isExpensive ?? "<OriginalItem />"}
-  </li>
-`;
-```
-
-> conditionally call/trigger a function
-
-```js
-const props = isTriggered ?? saveNotes(notes);
 ```
 
 - ##### Conditional rendering with the ternary operator `?:`

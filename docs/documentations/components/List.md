@@ -24,7 +24,7 @@ $render(List);
 ```js
 const todos = [{ title: "yo ya" }, { title: "yeah" }];
 
-function List(todos = []) {
+function List({ todos = [] } = {}) {
   return `
     <div id="list">
       <ul id="list">
@@ -58,7 +58,17 @@ function List(todos = []) {
     </div>
   `;
 }
+```
 
+### Gegister component
+
+```js
+$register({ List });
+```
+
+### Render component
+
+```js
 $render(App);
 ```
 

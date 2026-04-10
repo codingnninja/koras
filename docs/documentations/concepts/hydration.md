@@ -31,7 +31,7 @@ function Calculator(result) {
 The `koras` will hydrate the `add` function above into the `Calculator` component. It attaches the function to the element returned by the `Calculator` component.
 
 ```js
-<button onClick="__$callMethod(ks[83jskks], ks[jd79393])">add</button>
+<button onClick="__$c(ks[83jskks], ks[jd79393])">add</button>
 ```
 
 This hydration system works for both client and server rendered UIs.

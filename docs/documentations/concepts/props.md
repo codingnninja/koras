@@ -29,7 +29,7 @@ You don't need to wrap { } or ${ } in single or double quotes.
 
 ##### Passing down non-object data type as a prop
 
-To pass down non-object data type, we use `double quotes("")`, `${}`, `{}` or all of them together.
+To pass down non-object data type, we use `double ("") or single('') quotes`, `${}`, `{}` or all of them together.
 
 - number
 
@@ -94,10 +94,14 @@ function Audio(song) {
 
 ```js
 const Counter = ({ count = 0 } = {}) => {
+  function reRender(count) {
+    $render(Counter, { count: count + 1 });
+  }
+
   return `
       <div id="counter">
         <button 
-          onClick="$render(Counter, ${{ count: count + 1 }})" 
+          onClick="${reRneder(count + 1)}" 
           style="height:30px; width:100px">Count is ${count}
         </button>
       </div>
@@ -128,7 +132,7 @@ const Post = ({ post, editPost }) => {
 
 - Function calls in component body.
 
-You can call a funciton as in JavaScript within the body of a component.
+You can call a function as in JavaScript within the body of a component.
 
 ```js copy
 const LatestPost = (getLatestPost) => {
@@ -144,17 +148,15 @@ const LatestPost = (getLatestPost) => {
 };
 ```
 
-:::info
-Note: Whenever you have to use a string containing `>` `<` and the like in the body of a function, you need to serialize the string.
-:::
-
 - boolean
 
 ```js
 const Repeat = (status = false) => {
+
   function reRender(status){
     $render(Repeat, ${!status})
   }
+
   return `
     <div id="repeat">
       <button class="btn-icon toggle">

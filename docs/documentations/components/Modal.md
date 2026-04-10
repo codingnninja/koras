@@ -8,11 +8,11 @@ Modals show components by stacking or popping them up above the main page. There
 const App = (props) => {
   return `
     <button 
-      onClick="$render(LoginModal,'${stringify(items)}')">
+      onClick="$render(LoginModal,'${{ items }}')">
       Show login
     </button>
     <button 
-      onClick="$render(PriceModal,'${stringify(items)}')">
+      onClick="$render(PriceModal,'${{ items }}')">
       Show price
     </button>
     <ModalPlaceholder />
@@ -78,6 +78,12 @@ const LoginModal = (props) => {
     </div>
   `;
 };
+```
+
+### Register components
+
+```js
+$register({ App, PlaceholderModal, LoginModal, PriceModal });
 ```
 
 ### Render App

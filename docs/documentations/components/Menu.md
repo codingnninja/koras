@@ -20,6 +20,16 @@ function Menu() {
 }
 ```
 
+### Register component
+
+```js
+$register({ Menu });
+```
+
+```js
+$render(Menu);
+```
+
 <iframe src="https://codesandbox.io/embed/75n34m?view=preview&module=%2Findex.html"
      style="width:100%; height: 500px; border:0; border-radius: 4px; overflow:hidden;"
      title="Toggling menu"

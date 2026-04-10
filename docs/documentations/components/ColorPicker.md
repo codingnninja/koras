@@ -100,7 +100,7 @@ $register({
   PickerIndicatorRenderer,
   PickerIcon,
   ColorCodeIndicator,
-  ColorPicker
+  ColorPicker,
 });
 
 $render(ColorPicker);

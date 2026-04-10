@@ -9,7 +9,7 @@ function RenderErrorLogger({ error }) {
   return "";
 }
 
-$register(RenderErrorLogger);
+$register({ RenderErrorLogger });
 ```
 
 Once you register `RenderErrorLogger`, `$render` will keep sending errors to it and you can choose to send errors to the server.

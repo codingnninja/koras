@@ -29,9 +29,22 @@ function Notes() {
     </div>
   `;
 }
+```
 
-$register(Notes);
-$render(Notes);
+### Register component
+
+```js
+$register({ Note });
+```
+
+### Render Note
+
+```js
+$render(Note);
 ```
 
 The `Notes` component above has to access the DOM for `id` for the next note to add since it basically operates on html tags.
+
+```
+
+```
