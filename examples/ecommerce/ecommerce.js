@@ -1,4 +1,4 @@
-import { $render, $register} from "../../dist/esm/render.js";
+import { $render, $register} from "../../dist/esm/koras.js";
 import { $select} from "../../dist/esm/query.js";
   
 function TodoApp(props) {
