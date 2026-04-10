@@ -1,3 +1,4 @@
+import { callRenderErrorLogger } from "../loggers/errorLogger";
 
 let _$;
 const STRING = "string";
@@ -190,7 +191,6 @@ function buildDataStructureFrom(queryString) {
     }
     return result.length === ONE ? result[ZERO] : result;
   }
-  
   function setAttribute(elements, constraints) {
     const [action, params] = constraints;
     if(params.length === 4){
@@ -340,7 +340,7 @@ function buildDataStructureFrom(queryString) {
     return result;
   }
   
-  function $select(str, offSuperpowers = false) {
+  export function $select(str, offSuperpowers = false) {
     if (!isBrowserDOM()) {
       throw new Error("You cannot use $select on the server");
     }
@@ -376,6 +376,7 @@ function buildDataStructureFrom(queryString) {
     return normalizeResult(collected, isMultiSelector);
   }
   
+  globalThis.$select = $select;
   /* function $select(str, offSuperpowers = false) {
     if (!isBrowserDOM()) {
       throw new Error("You cannot use $select on the server");
@@ -421,9 +422,6 @@ function buildDataStructureFrom(queryString) {
     }
   } */
 
-  globalThis["$select"] = $select;
-
-  export { $select }
 
 //git tag -a v0.1.2-beta.1 -m "Release v0.1.2-beta.1"
 //git push origin v0.1.2-beta.1
