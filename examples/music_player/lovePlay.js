@@ -1,13 +1,11 @@
 "use strict";
 
-import { $select } from "../../dist/esm/query.min.js";
-
 import {
   $render,
   $register,
   stringify,
-  $purify
-} from "../../dist/esm/render.min.js";
+  $select
+} from "../../dist/esm/koras.min.js";
 
 let playingInterval;
 
