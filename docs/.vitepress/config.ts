@@ -38,6 +38,7 @@ export default defineConfig({
         text: "Introduction",
         collapsed: false,
         items: [
+          {text: "Why koras", link: "/documentations/why-koras"},
           {text: "Getting started", link: "/documentations/get-started"}
         ],
       },
@@ -47,7 +48,8 @@ export default defineConfig({
         items: [
           { text: "$select", link: "/documentations/utils/$select" },
           { text: "$render", link: "/documentations/utils/$render" },
-          { text: "Fetchers", link: "/documentations/utils/fetchers" },
+          { text: "For", link: "/documentations/utils/For.md" },
+          { text: "If", link: "/documentations/utils/If.md" },
           { text: "$register", link: "/documentations/utils/$register" },
           { text: "Stringify", link: "/documentations/utils/stringify" },
           { text: "$purify", link: "/documentations/utils/$purify" },
