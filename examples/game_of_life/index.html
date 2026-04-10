@@ -1,0 +1,25 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link id="css" rel="stylesheet" type="text/css" href="style.css">
+        <title>Game of Life</title>
+        <meta content="Conway's Game of Life" name="description">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="module" src="index.js"></script>
+        <script type="module" src="index.js"></script>
+    </head>
+    <body>
+        <div data-signals:csrf="document.cookie.match(/(^| )__Host-csrf=([^;]+)/)?.[2]" data-signals:tabid="self.crypto.randomUUID().substring(0,8)"></div>
+        <div data-init="@post(window.location.pathname + (window.location.search + '&amp;u=').replace(/^&amp;/,'?'), {retryMaxCount: Infinity})" data-on:online__window="@post(window.location.pathname + (window.location.search + '&amp;u=').replace(/^&amp;/,'?'), {retryMaxCount: Infinity})"></div>
+        <noscript>Your browser does not support JavaScript!</noscript>
+        <main id="morph" class="main">
+            <h1>Game of Life (multiplayer)</h1>
+            <p>Built with ❤️ using <a href="https://clojure.org/">Clojure</a> and <a href="https://data-star.dev">Koras</a>🚀</p>
+            <div id="gameoflife">
+                <section class="board">
+                    <div class="cell dead"></div>
+                </section>
+            </div>
+        </main>
+    </body>
+</html>

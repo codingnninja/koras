@@ -1,0 +1,81 @@
+*, *::before, *::after{box-sizing:border-box;margin:0;padding:0;}html{color:black;font-family:Arial, Helvetica, sans-serif;font-size:18px;}.main{display:flex;flex-direction:column;gap:5px;height:100dvh;margin-inline:auto;padding-block:2dvh;width:min(100% - 2rem , 30rem);}.board{aspect-ratio:1/1;background:white;display:grid;grid-template-columns:repeat(20, 1fr);grid-template-rows:repeat(20, 1fr);width:min(100% - 2rem , 30rem);}.tile,.cell{border-bottom:1px solid black;border-right:1px solid black;}.dead{background:white;}.red{background:red;transition:background 0.6s ease;}.blue{background:blue;transition:background 0.6s ease;}.green{background:green;transition:background 0.6s ease;}.orange{background:orange;transition:background 0.6s ease;}.fuchsia{background:fuchsia;transition:background 0.6s ease;}.purple{background:purple;transition:background 0.6s ease;}
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 2px;
+  width: 400px;
+}
+
+.cell {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #111;
+  transition: 
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Alive cell */
+.cell.alive {
+  background: #00ff88;
+  transform: scale(1.1);
+  box-shadow: 
+    0 0 6px #00ff88,
+    0 0 12px rgba(0,255,136,0.6);
+}
+
+/* Dead cell */
+.cell.dead {
+  background: #1a1a1a;
+}
+
+/* 👇 Fake "neighbor influence" glow */
+.cell.alive + .cell,
+.cell.alive ~ .cell {
+  box-shadow: 0 0 4px rgba(0,255,136,0.2);
+}
+
+#controls {
+  margin-bottom: 10px;
+}
+
+#controls button {
+  margin-right: 5px;
+  padding: 6px 10px;
+  border: none;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#controls button:hover {
+  background: #444;
+}
+
+#controls input {
+  margin-left: 10px;
+}
+
+.cell {
+  transition: all 0.2s ease;
+}
+
+/* Alive stays dominant */
+.cell.alive {
+  background: #00ff88;
+}
+
+/* 👇 Neighbor intensity */
+.cell.n-1 { box-shadow: 0 0 3px rgba(0,255,136,0.2); }
+.cell.n-2 { box-shadow: 0 0 5px rgba(0,255,136,0.3); }
+.cell.n-3 { box-shadow: 0 0 8px rgba(0,255,136,0.5); }
+.cell.n-4 { box-shadow: 0 0 10px rgba(255,255,0,0.6); }
+.cell.n-5 { box-shadow: 0 0 12px rgba(255,165,0,0.7); }
+.cell.n-6,
+.cell.n-7,
+.cell.n-8 {
+  box-shadow: 0 0 14px rgba(255,0,0,0.8);
+}
