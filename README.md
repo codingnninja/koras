@@ -41,7 +41,7 @@ Koras looks similar to JSX but operates differently.
 Recommended VSCode extensions:
 
 - Install **VS Code**
-- Install **Template Literals** extension (syntax highlightrt)
+- Install **Template Literals** and **leet-html** VScode extension (syntax highlighter)
 - Install **Auto Complete Tag** (auto close/rename tags)
 
 ---
@@ -229,8 +229,9 @@ function Reviewer({ rules, children }) {
 
 function SummaryAgent({ topic }) {
   //run LLMs or AIs here
+  const summarisedTopic = topic;
   return `
-    <p>Summary generated for ${topic}</p>
+    <p>Summary generated for ${ummarisedTopic}</p>
   `;
 }
 
