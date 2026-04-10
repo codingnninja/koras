@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { App } from './app.js';
-import { $render } from "../../dist/esm/render.js";
+import { $render } from "../../dist/esm/koras.js";
 
 
 // Props to pass to the component
