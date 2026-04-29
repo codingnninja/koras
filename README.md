@@ -60,7 +60,7 @@ CDN (no build required)
 import {
   $register,
   $render,
-} from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/render.min.js";
+} from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
 
 import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/query.min.js";
 ```
@@ -125,7 +125,7 @@ $render(Counter);
       import {
         $render,
         $register
-      } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/render.min.js";
+      } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
 
 
       const Counter = ({ count = 0 } = {}) => {
