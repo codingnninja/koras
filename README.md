@@ -1,6 +1,6 @@
 # Koras — Hybrid UI Component & Rendering System
 
-**Koras** is a no-build, JSX-like UI system that runs directly in the browser, server, or worker without a virtual DOM or tagged templates.
+**Koras** is a no-build, JSX-like UI system that runs directly in browsers, servers, or workers without a virtual DOM or tagged templates.
 
 It let you render JavaScript components with minimal overhead while keeping the mental model simple and flexible.
 
@@ -8,7 +8,7 @@ It let you render JavaScript components with minimal overhead while keeping the 
 
 ## Why Koras?
 
-- Use JSX-like syntax anywhere JavaScript runs — browser, server, or worker
+- Use JSX-like syntax anywhere JavaScript runs — browsers, servers, or workers
 - Run components synchronously or asynchronously
 - No compilation step required
 - No virtual DOM diffing
@@ -38,9 +38,12 @@ Koras looks similar to JSX but operates differently.
 
 ## Development Tools
 
+Code editor:
+
+-Install **VS Code**
+
 Recommended VSCode extensions:
 
-- Install **VS Code**
 - Install **Template Literals** and **leet-html** VScode extension (syntax highlighter)
 - Install **Auto Complete Tag** (auto close/rename tags)
 
@@ -91,7 +94,7 @@ import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/e
 ```js
 import { $render, $register, $select } from "@codingnninja/koras";
 
-const Counter = ({ count = 0 } = {}) => {
+function Counter ({ count = 0 } = {}) {
   function reRender(count) {
     $render(Counter, { count: count + 1 });
   }
@@ -128,7 +131,7 @@ $render(Counter);
       } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
 
 
-      const Counter = ({ count = 0 } = {}) => {
+      function Counter ({ count = 0 } = {}) {
         function reRender(count) {
           $render(Counter, { count: count + 1 });
         }
@@ -170,7 +173,7 @@ export function CopyToClipboard({
   return `
       <section id="${id}">
         <input
-          id="copy-input"
+          id="copy-input"   
           type="text"
           value=${text}
           placeholder=${text}
