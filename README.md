@@ -94,7 +94,7 @@ import { $select } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/e
 ```js
 import { $render, $register, $select } from "@codingnninja/koras";
 
-function Counter ({ count = 0 } = {}) {
+function Counter({ count = 0 } = {}) {
   function reRender(count) {
     $render(Counter, { count: count + 1 });
   }
@@ -102,12 +102,12 @@ function Counter ({ count = 0 } = {}) {
   return `
     <div id="counter">
       <button
-        onClick="reRender(${count})"
+        onClick="${reRender(count)}"
         style="height:30px; width:100px">Count is ${count}
       </button>
     </div>
   `;
-};
+}
 
 $register({ Counter });
 $render(Counter);
@@ -127,11 +127,10 @@ $render(Counter);
     <script type="module">
       import {
         $render,
-        $register
+        $register,
       } from "https://cdn.jsdelivr.net/npm/@codingnninja/koras/dist/esm/koras.min.js";
 
-
-      function Counter ({ count = 0 } = {}) {
+      function Counter({ count = 0 } = {}) {
         function reRender(count) {
           $render(Counter, { count: count + 1 });
         }
@@ -139,12 +138,12 @@ $render(Counter);
         return `
           <div id="counter">
             <button
-              onClick="${reRender(${count})}"
+              onClick="${reRender(count)}"
               style="height:30px; width:100px">Count is ${count}
             </button>
           </div>
         `;
-      };
+      }
 
       $register({ Counter });
       $render(Counter);
